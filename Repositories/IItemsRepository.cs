@@ -7,6 +7,8 @@ namespace BackEnd.Repositories
     public interface IItemsRepository
     {
         IEnumerable<Item> GetItems();
-        Item GetItems(Guid id);
+        Item GetItem(Guid id);
+        void CreateItem(Item item);
+        void UpdateItem(Item item);
     }
 }

@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 
 namespace BackEnd.Repositories{
-
     public class InMemItemsRepository : IItemsRepository
     {
         private readonly List<Item> items = new()
@@ -15,13 +14,26 @@ namespace BackEnd.Repositories{
 
 
         };
+
+        public void CreateItem(Item item)
+        {
+            items.Add(item);
+        }
+
         public IEnumerable<Item> GetItems()
         {
             return items;
         }
-        public Item GetItems(Guid id)
+        public Item GetItem(Guid id)
         {
             return items.Where(Item => Item.Id == id).FirstOrDefault();
+        }
+
+        public void UpdateItem(Item item)
+        {
+            Item Check_item = items.Where(p=> p.Id == item.Id).FirstOrDefault();
+
+            Check_item = item;
         }
     }
 }
