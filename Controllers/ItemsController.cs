@@ -25,11 +25,11 @@ namespace BackEnd.Controllers
         [HttpGet]
         public IEnumerable<ItemDto> GetItems(){
             // Dữ liệu lấy tại Repositories
-            var items = repository.GetItems().Select(Item => Item.AsDto());
+            IEnumerable<ItemDto> items = repository.GetItems().Select(Item => Item.AsDto());
             return items;
 
         }
-        [HttpGet("[action]/{id}")]
+        [HttpGet("{id}")]
         public ActionResult<ItemDto> GetItem(Guid id){
             ItemDto item = repository.GetItem(id).AsDto();
 
@@ -51,22 +51,30 @@ namespace BackEnd.Controllers
             
             return CreatedAtAction(nameof(GetItem), new {id = item.Id}, item.AsDto());
         }
-        [HttpPut("[action]]/{id}")]
+        [HttpPut("{id}")]
         public ActionResult<ItemDto> UpdateItem(UpdateItem itemDto, Guid id){
             Item search_item = repository.GetItem(id);
 
             if(search_item is null){
                 return NotFound();
             }
-            Item new_Item = new Item(){
+            Item updateItem = search_item with {
                 Name = itemDto.Name,
-                Id = search_item.Id,
-                Price = itemDto.Price,
-                CreateDate = search_item.CreateDate
+                Price = itemDto.Price
             };
-            repository.UpdateItem(new_Item);
+            repository.UpdateItem(updateItem);
             return NoContent();
 
+        
+        }
+        [HttpDelete("{id}")]
+        public ActionResult<ItemDto> DeleteItem(Guid id){
+            Item search_Item = repository.GetItem(id);
+            if(search_Item is null){
+                return NotFound();
+            }
+            repository.DeleteItem(search_Item);
+            return NoContent();
         }
     }
 }
