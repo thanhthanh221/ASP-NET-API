@@ -40,7 +40,9 @@ namespace BackEnd
                 return new MongoClient(settings.ConnectionString);
             }); 
             services.AddSingleton<IItemsRepository, MongodbItemRepositories>(); // khai triển qua Interface
-            services.AddControllers();
+            services.AddControllers(option =>{
+                option.SuppressAsyncSuffixInActionNames = false; //Phương thức xóa bỏ hậu tố bất đồng bộ (Async)
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ASP_NET_API__Angular_2", Version = "v1" });

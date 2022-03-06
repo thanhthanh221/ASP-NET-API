@@ -23,15 +23,15 @@ namespace BackEnd.Controllers
             this.repository = repository;
         }
         [HttpGet]
-        public IEnumerable<ItemDto> GetItems(){
+        public async Task<IEnumerable<ItemDto>> GetItems(){
             // Dữ liệu lấy tại Repositories
-            IEnumerable<ItemDto> items = repository.GetItems().Select(Item => Item.AsDto());
+            IEnumerable<ItemDto> items = (await repository.GetItemsAsync()).Select(Item => Item.AsDto());
             return items;
 
         }
         [HttpGet("{id}")]
-        public ActionResult<ItemDto> GetItem(Guid id){
-            ItemDto item = repository.GetItem(id).AsDto();
+        public async Task<ActionResult<ItemDto>> GetItem(Guid id){
+            ItemDto item = (await repository.GetItemAsync(id)).AsDto();
 
             if(item is null){
                 return NotFound();
@@ -47,13 +47,13 @@ namespace BackEnd.Controllers
                 Price = itemDto.Price,
                 CreateDate = DateTimeOffset.UtcNow
             };
-            repository.CreateItem(item);
+            repository.CreateItemAsync(item);
             
             return CreatedAtAction(nameof(GetItem), new {id = item.Id}, item.AsDto());
         }
         [HttpPut("{id}")]
-        public ActionResult<ItemDto> UpdateItem(UpdateItem itemDto, Guid id){
-            Item search_item = repository.GetItem(id);
+        public async Task<ActionResult<ItemDto>> UpdateItem(UpdateItem itemDto, Guid id){
+            Item search_item = await repository.GetItemAsync(id);
 
             if(search_item is null){
                 return NotFound();
@@ -62,18 +62,18 @@ namespace BackEnd.Controllers
                 Name = itemDto.Name,
                 Price = itemDto.Price
             };
-            repository.UpdateItem(updateItem);
+            await repository.UpdateItemAsync(updateItem);
             return NoContent();
 
         
         }
         [HttpDelete("{id}")]
-        public ActionResult<ItemDto> DeleteItem(Guid id){
-            Item search_Item = repository.GetItem(id);
+        public async Task<ActionResult<ItemDto>> DeleteItem(Guid id){
+            Item search_Item = await repository.GetItemAsync(id);
             if(search_Item is null){
                 return NotFound();
             }
-            repository.DeleteItem(search_Item);
+            await repository.DeleteItemAsync(search_Item);
             return NoContent();
         }
     }

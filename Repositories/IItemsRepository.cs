@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
 using BackEnd.Entities;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace BackEnd.Repositories 
 {
     public interface IItemsRepository
     {
-        IEnumerable<Item> GetItems();   
-        Item GetItem(Guid id);
-        void CreateItem(Item item);
-        void UpdateItem(Item item);
-        void DeleteItem(Item item);
+        Task<IEnumerable<Item>> GetItemsAsync();   
+        Task<Item> GetItemAsync(Guid id);
+        Task CreateItemAsync(Item item);
+        Task UpdateItemAsync(Item item);
+        Task DeleteItemAsync(Item item);
     }
 }
