@@ -17,6 +17,10 @@ using BackEnd.Settings;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson;
+using System.Text.Json;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using System.Net.Mime;
+using Microsoft.AspNetCore.Http;
 
 namespace BackEnd
 {
@@ -34,10 +38,10 @@ namespace BackEnd
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+            MongoDbSettings MongoDBsettings =  Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
 
             services.AddSingleton<IMongoClient>(servicesProvider => {
-                MongoDbSettings settings =  Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
-                return new MongoClient(settings.ConnectionString);
+                return new MongoClient(MongoDBsettings.ConnectionString);
             }); 
             services.AddSingleton<IItemsRepository, MongodbItemRepositories>(); // khai triển qua Interface
             services.AddControllers(option =>{
@@ -47,6 +51,12 @@ namespace BackEnd
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ASP_NET_API__Angular_2", Version = "v1" });
             });
+            services.AddHealthChecks()
+                .AddMongoDb(
+                    MongoDBsettings.ConnectionString, 
+                    name: "mongodb",
+                    timeout: TimeSpan.FromSeconds(3),
+                    tags: new[] {"ready"});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,6 +78,28 @@ namespace BackEnd
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/healthcheck/ready",new HealthCheckOptions{
+                    Predicate = (check) => check.Tags.Contains("ready"),
+                    ResponseWriter = async(context, report) =>
+                    {
+                        string result = JsonSerializer.Serialize(
+                            new{
+                                status = report.Status.ToString(),
+                                checks = report.Entries.Select(entry => new {
+                                    name = entry.Key,
+                                    status = entry.Value.Status.ToString(),
+                                    exception = entry.Value.Exception != null ? entry.Value.Exception.Message :"none",
+                                    duration = entry.Value.Duration.ToString()
+                                })
+                            }
+                        );
+                        context.Response.ContentType = MediaTypeNames.Application.Json;
+                        await context.Response.WriteAsync(result);
+                    }
+                });
+                endpoints.MapHealthChecks("/healthcheck/live",new HealthCheckOptions{
+                    Predicate = (_) => false
+                });
             });
         }
     }
