@@ -10,8 +10,6 @@ COPY ["ASP NET API +Angular 2.csproj", "./"]
 RUN dotnet restore "ASP NET API +Angular 2.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "ASP NET API +Angular 2.csproj" -c Release -o /app/build
-
 FROM build AS publish
 RUN dotnet publish "ASP NET API +Angular 2.csproj" -c Release -o /app/publish /p:UseAppHost=false
 

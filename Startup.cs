@@ -21,6 +21,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackEnd
 {
@@ -36,6 +37,10 @@ namespace BackEnd
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<UserDbContext>(options => {
+                string ConllString = Configuration.GetConnectionString(nameof(UserDbContext));
+                options.UseSqlServer(ConllString);
+            });
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
             MongoDbSettings MongoDBsettings =  Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
@@ -44,19 +49,22 @@ namespace BackEnd
                 return new MongoClient(MongoDBsettings.ConnectionString);
             }); 
             services.AddSingleton<IItemsRepository, MongodbItemRepositories>(); // khai triển qua Interface
+            services.AddScoped<IUserRepository, UserRepository>();
+            
             services.AddControllers(option =>{
                 option.SuppressAsyncSuffixInActionNames = false; //Phương thức xóa bỏ hậu tố bất đồng bộ (Async)
             });
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ASP_NET_API__Angular_2", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ASP_NET_API", Version = "v1" });
             });
             services.AddHealthChecks()
                 .AddMongoDb(
                     MongoDBsettings.ConnectionString, 
                     name: "mongodb",
                     timeout: TimeSpan.FromSeconds(3),
-                    tags: new[] {"ready"});
+                    tags: new[] {"ready"}
+                );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,7 +74,7 @@ namespace BackEnd
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ASP_NET_API__Angular_2 v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ASP_NET_API v1"));
             }
 
             app.UseHttpsRedirection();

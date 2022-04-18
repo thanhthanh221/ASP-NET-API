@@ -31,13 +31,14 @@ namespace BackEnd.Controllers
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemDto>> GetItem(Guid id){
-            ItemDto item = (await repository.GetItemAsync(id)).AsDto();
-
+            
+            Item item = (await repository.GetItemAsync(id));
             if(item is null){
                 return NotFound();
             }
+            ItemDto itemDto = item.AsDto();
 
-            return item;
+            return itemDto;
         }
         [HttpPost]
         public ActionResult<ItemDto> CreateItem(CreateItemDto itemDto){
@@ -75,6 +76,6 @@ namespace BackEnd.Controllers
             }
             await repository.DeleteItemAsync(search_Item);
             return NoContent();
-        }
+        }   
     }
 }
