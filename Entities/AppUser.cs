@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BackEnd.Entities
 {
@@ -14,6 +15,6 @@ namespace BackEnd.Entities
         [Required]
         public String Email {get; set;}
         [Required]
-        public String PassWord {get; set;}
+        [JsonIgnore] public String PassWord {get; set;}
     }
 }

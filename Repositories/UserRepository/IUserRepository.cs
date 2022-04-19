@@ -8,6 +8,7 @@ namespace BackEnd.Repositories
     {
         void CreateUser(User user);
         User LoginUser(String Email);
+        User GetById(Guid Id);
              
     }
 }

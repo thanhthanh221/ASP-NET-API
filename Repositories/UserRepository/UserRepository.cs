@@ -22,7 +22,10 @@ namespace BackEnd.Repositories
             context.SaveChanges();
           
         }
-
+        public User GetById(Guid Id)
+        {
+            return context.users.Where(p => p.Id.Equals(Id)).SingleOrDefault();
+        }
         public User LoginUser(String Email)
         {
             return context.users.Where(p => p.Email.Equals(Email)).SingleOrDefault();          

@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using BackEnd.Helpers;
 
 namespace BackEnd
 {
@@ -47,10 +48,12 @@ namespace BackEnd
 
             services.AddSingleton<IMongoClient>(servicesProvider => {
                 return new MongoClient(MongoDBsettings.ConnectionString);
-            }); 
+            });
+            services.AddCors();
             services.AddSingleton<IItemsRepository, MongodbItemRepositories>(); // khai triển qua Interface
             services.AddScoped<IUserRepository, UserRepository>();
-            
+            services.AddScoped<JwtService>();
+
             services.AddControllers(option =>{
                 option.SuppressAsyncSuffixInActionNames = false; //Phương thức xóa bỏ hậu tố bất đồng bộ (Async)
             });
@@ -80,6 +83,13 @@ namespace BackEnd
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(options =>  options
+                .WithOrigins("https://localhost:5001","https://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+            );
 
             app.UseAuthorization();
 

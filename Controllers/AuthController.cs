@@ -3,6 +3,9 @@ using BackEnd.Entities;
 using BackEnd.Repositories;
 using BackEnd.Dto;
 using System;
+using BackEnd.Helpers;
+using Microsoft.AspNetCore.Http;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BackEnd.Controllers 
 {
@@ -10,11 +13,13 @@ namespace BackEnd.Controllers
     [Route("Auth")]
     public class AuthController : ControllerBase
     {
+        private readonly JwtService jwtService;
         private readonly IUserRepository userRepository;
 
-        public AuthController(IUserRepository userRepository)
+        public AuthController(IUserRepository userRepository, JwtService jwtService )
         {
             this.userRepository = userRepository;
+            this.jwtService = jwtService;
         }
 
         [HttpGet]
@@ -36,7 +41,17 @@ namespace BackEnd.Controllers
             {
                 return BadRequest(new {message = "Mật khẩu không chính xác"});
             }
-            return Ok(User);
+            String jwt = jwtService.generate(user.Id); // Lưu phía sever
+            
+
+            // Phía Client sẽ nếu đăng nhập thành công thì Cookie sẽ trả về True
+            Response.Cookies.Append("jwt", jwt , new CookieOptions
+            {
+                HttpOnly = true
+            });
+            return Ok(new {
+                message = "thành công"
+            });
         }
         [HttpPost("Register")]
         public ActionResult Register(CreateUserDto userDto)
@@ -51,6 +66,27 @@ namespace BackEnd.Controllers
             userRepository.CreateUser(user);
             
             return CreatedAtAction(nameof(Register), new {user = user});
+        }
+        [HttpGet("Login")]
+        public ActionResult Login()
+        {
+            try
+            {
+                String jwt = Request.Cookies["jwt"];
+            
+                var token = jwtService.Verify(jwt);
+
+                Guid UserId = Guid.Parse(token.Issuer);
+
+                var user = userRepository.GetById(UserId);
+
+                return Ok(user);
+            }
+            catch (System.Exception)
+            {
+                
+                return Unauthorized();
+            }
         }
 
     }
