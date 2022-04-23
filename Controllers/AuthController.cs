@@ -88,6 +88,15 @@ namespace BackEnd.Controllers
                 return Unauthorized();
             }
         }
+        [HttpGet("Logout")]
+        public ActionResult Logout()
+        {
+            Response.Cookies.Delete("jwt");
+            
+            return Ok(new {
+                message = "Thành Công"
+            });
+        }
 
     }
 }

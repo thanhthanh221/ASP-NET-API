@@ -28,6 +28,7 @@ namespace BackEnd
 {
     public class Startup
     {
+        String MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -49,8 +50,20 @@ namespace BackEnd
             services.AddSingleton<IMongoClient>(servicesProvider => {
                 return new MongoClient(MongoDBsettings.ConnectionString);
             });
-            services.AddCors();
+            services.AddCors(options => 
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    policy  =>
+                        {
+                            policy.WithOrigins("http://localhost:3000");
+                        });
+            }
+            );
+            // MongoDb
             services.AddSingleton<IItemsRepository, MongodbItemRepositories>(); // khai triển qua Interface
+            services.AddSingleton<IProductRepository, MongoDbProductRepository>();
+
+            // SQL thì phải dùng Scoped 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<JwtService>();
 
@@ -84,12 +97,7 @@ namespace BackEnd
 
             app.UseRouting();
 
-            app.UseCors(options =>  options
-                .WithOrigins("https://localhost:5001","https://localhost:3000")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-            );
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 

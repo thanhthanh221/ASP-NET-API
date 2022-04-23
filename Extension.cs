@@ -12,6 +12,16 @@ namespace BackEnd {
                 CreateDate = item.CreateDate
             }; 
         }
+        public static GetProductDto AsDtoGetProduct(this Product product)
+        {
+            return new GetProductDto 
+            {
+                Name = product.Name,
+                Price = product.Price,
+                Describe = product.Describe
+            };
+        }
+        
     }
 
 }
