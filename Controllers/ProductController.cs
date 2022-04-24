@@ -6,6 +6,8 @@ using System.Linq;
 using BackEnd.Repositories;
 using System.Threading.Tasks;
 using BackEnd.Dto;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace BackEnd.Controllers
 {
@@ -49,8 +51,30 @@ namespace BackEnd.Controllers
                 Price = productDto.Price,
                 Describe = productDto.Describe,
                 DateTimeCreate = DateTimeOffset.UtcNow,
-                Id = Guid.NewGuid()
+                Id = Guid.NewGuid(),
+                numberOfStars = productDto.numberOfStars
             };
+
+            try
+            {
+                var files = HttpContext.Request.Form.Files;
+                if(files != null && files.Count() > 0) 
+                {
+                    foreach (var file in files)
+                    {
+                        FileInfo fi = new FileInfo(file.FileName);
+                        var newFileName = "img" + DateTimeOffset.Now.TimeOfDay.Milliseconds + fi.Extension;
+                        
+                    }
+                }
+            }
+            catch (System.Exception)
+            {
+                
+                throw;
+            }
+
+
             await productRepository.CreateProductAsync(product);
 
             return CreatedAtAction(nameof(CreateProductAsync), new {Id = product.Id}, product); 

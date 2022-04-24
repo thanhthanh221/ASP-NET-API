@@ -18,7 +18,8 @@ namespace BackEnd {
             {
                 Name = product.Name,
                 Price = product.Price,
-                Describe = product.Describe
+                Describe = product.Describe,
+                numberOfStars = product.numberOfStars
             };
         }
         

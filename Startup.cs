@@ -28,10 +28,12 @@ namespace BackEnd
 {
     public class Startup
     {
+        public static string ContentRootPath {get; set;}
         String MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            ContentRootPath = env.ContentRootPath;
         }
 
         public IConfiguration Configuration { get; }
@@ -45,6 +47,8 @@ namespace BackEnd
             });
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+            BsonSerializer.RegisterSerializer(new ByteArraySerializer(BsonType.String));
+
             MongoDbSettings MongoDBsettings =  Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
 
             services.AddSingleton<IMongoClient>(servicesProvider => {
@@ -62,6 +66,7 @@ namespace BackEnd
             // MongoDb
             services.AddSingleton<IItemsRepository, MongodbItemRepositories>(); // khai triển qua Interface
             services.AddSingleton<IProductRepository, MongoDbProductRepository>();
+            services.AddSingleton<IImgProduct, MongoDbImgProduct>();
 
             // SQL thì phải dùng Scoped 
             services.AddScoped<IUserRepository, UserRepository>();

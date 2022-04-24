@@ -8,6 +8,8 @@ namespace BackEnd.Entities
         public string Name {get; set;}
         public string Describe {get; set;}
         public DateTimeOffset DateTimeCreate {get; set;}
+        public double numberOfStars {get; set;}
+        
         public override bool Equals(object obj)
         {
              Product s = obj as Product;
