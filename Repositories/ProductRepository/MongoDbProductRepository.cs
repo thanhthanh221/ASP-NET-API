@@ -19,9 +19,10 @@ namespace BackEnd.Repositories
             IMongoDatabase database = mongoClient.GetDatabase(dataBaseName);
             ProductCollection = database.GetCollection<Product>(CollectionName);
         }
-        public async Task CreateProductAsync(Product product)
+        public async Task<Boolean> CreateProductAsync(Product product)
         {
             await ProductCollection.InsertOneAsync(product);
+            return true;
         }
         public async Task DeleteProductAsync(Product product)
         {

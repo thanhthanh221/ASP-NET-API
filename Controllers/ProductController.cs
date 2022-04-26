@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using BackEnd.Dto;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using System.Threading;
+using Microsoft.AspNetCore.Hosting;
 
 namespace BackEnd.Controllers
 {
@@ -15,11 +17,18 @@ namespace BackEnd.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
+        private static IWebHostEnvironment _environment;
         private readonly IProductRepository productRepository;
+        private readonly IImgProduct imgProductRepository;
 
-        public ProductController(IProductRepository productRepository)
+        public ProductController(IProductRepository productRepository,
+            IWebHostEnvironment environment,
+            IImgProduct imgProductRepository)
         {
             this.productRepository = productRepository;
+            _environment = environment;
+            this.imgProductRepository = imgProductRepository;
+            
         }
         [HttpGet]
         public async Task<ActionResult> GetProductsAsync()
@@ -43,7 +52,7 @@ namespace BackEnd.Controllers
             return productDto;
         }
         [HttpPost]
-        public async Task<ActionResult> CreateProductAsync(CreateProductDto productDto)
+        public async Task<ActionResult> CreateProductAsync([FromForm] CreateProductDto productDto)
         {
             Product product = new Product() 
             {
@@ -55,27 +64,18 @@ namespace BackEnd.Controllers
                 numberOfStars = productDto.numberOfStars
             };
 
-            try
+            Boolean createProduct = await productRepository.CreateProductAsync(product);
+            foreach (var file in productDto.files)
             {
-                var files = HttpContext.Request.Form.Files;
-                if(files != null && files.Count() > 0) 
+                ImgProduct imgProduct = new()
                 {
-                    foreach (var file in files)
-                    {
-                        FileInfo fi = new FileInfo(file.FileName);
-                        var newFileName = "img" + DateTimeOffset.Now.TimeOfDay.Milliseconds + fi.Extension;
-                        
-                    }
-                }
+                    Id = Guid.NewGuid(),
+                    Photo = await SaveImage(file),
+                    ProductId = product.Id
+                };
+                await imgProductRepository.CreateImgProductAsync(imgProduct);
+                            
             }
-            catch (System.Exception)
-            {
-                
-                throw;
-            }
-
-
-            await productRepository.CreateProductAsync(product);
 
             return CreatedAtAction(nameof(CreateProductAsync), new {Id = product.Id}, product); 
         }
@@ -108,6 +108,36 @@ namespace BackEnd.Controllers
             await productRepository.UpdateProductAsync(productUpdate);
 
             return NoContent();
+        }
+        // Xử lý nhập file ảnh
+        [NonAction]
+        public async Task<string> SaveImage(IFormFile file)
+        {
+            if(file.Length > 0)
+            {
+                try
+                {
+                    if(!Directory.Exists(_environment.ContentRootPath+ "\\Images\\"))
+                    {
+                        Directory.CreateDirectory(_environment.ContentRootPath + "\\Images\\");
+                    }
+                    using (FileStream fileStream = System.IO.File.Create(_environment.ContentRootPath + "\\Images\\"+file.FileName))
+                    {
+                        await file.CopyToAsync(fileStream);
+                        await fileStream.FlushAsync();
+                        
+                        return "\\Images\\" + file.FileName;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return ex.ToString();
+                }
+            }
+            else
+            {
+                return "Không Up được file";
+            }
         }
     }
 }

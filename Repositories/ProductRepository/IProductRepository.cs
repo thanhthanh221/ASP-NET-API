@@ -11,7 +11,7 @@ namespace BackEnd.Repositories
     {
         Task<IReadOnlyCollection<Product>> GetAllAsync();
         Task<Product> GetIdAsync(Guid Id);
-        Task CreateProductAsync(Product product);
+        Task<Boolean> CreateProductAsync(Product product);
         Task DeleteProductAsync(Product product);
         Task UpdateProductAsync(Product product);
     }
