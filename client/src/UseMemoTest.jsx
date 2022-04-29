@@ -3,10 +3,15 @@ import './App.css';
 import { useState } from 'react';
 import { useMemo } from 'react';
 import { useRef } from 'react';
+import { useEffect } from 'react';
+
+import axios, { Axios } from 'axios';
 
 function UseMemoTest() {
   const [Name, SetName] = useState("");
   const [Price, SetPrice] = useState("");
+  const [numberOffStar, SetnumberofStar] = useState("");
+
   const [Products, SetProducts] = useState([]);
   const nameRef = useRef();
 
@@ -20,6 +25,14 @@ function UseMemoTest() {
 
     nameRef.current.focus();
   }
+  useEffect(() => {
+    axios({
+      method: 'post',
+      url: 'https://localhost:5001/Product',
+      data: Products
+    })
+
+  })
   
 
   const total = useMemo(() => {

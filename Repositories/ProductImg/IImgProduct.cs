@@ -8,7 +8,7 @@ namespace BackEnd.Repositories
 {
     public interface IImgProduct
     {
-        Task<IReadOnlyCollection<ImgProduct>> GetImgProductsUserAsync(Guid ProductId);
+        Task<IReadOnlyCollection<ImgProduct>> GetImgProductsAsync();
         Task<ImgProduct> GetImgProductAsync(Guid Id);   
         Task CreateImgProductAsync(ImgProduct imgProduct);
         Task UpdateImgProductAsync(Guid Id, ImgProduct imgProduct);

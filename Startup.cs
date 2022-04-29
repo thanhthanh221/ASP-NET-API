@@ -54,15 +54,7 @@ namespace BackEnd
             services.AddSingleton<IMongoClient>(servicesProvider => {
                 return new MongoClient(MongoDBsettings.ConnectionString);
             });
-            services.AddCors(options => 
-            {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                    policy  =>
-                        {
-                            policy.WithOrigins("http://localhost:3000");
-                        });
-            }
-            );
+            services.AddCors();
             // MongoDb
             services.AddSingleton<IItemsRepository, MongodbItemRepositories>(); // khai triển qua Interface
             services.AddSingleton<IProductRepository, MongoDbProductRepository>();
@@ -102,7 +94,9 @@ namespace BackEnd
 
             app.UseRouting();
 
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors(buider => {
+                buider.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            });
 
             app.UseAuthorization();
 

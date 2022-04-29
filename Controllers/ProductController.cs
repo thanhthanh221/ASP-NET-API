@@ -33,13 +33,34 @@ namespace BackEnd.Controllers
         [HttpGet]
         public async Task<ActionResult> GetProductsAsync()
         {
+            // Trả về sản phẩm
             IEnumerable<GetProductDto> productsDto = (await productRepository.GetAllAsync()).ToList().Select(p => p.AsDtoGetProduct());
+
+            var imgcheck = from a in await imgProductRepository.GetImgProductsAsync()
+                            orderby a.Id
+                            group a by a.ProductId;
+
+            List<IGrouping<Guid, ImgProduct>> hash = new List<IGrouping<Guid, ImgProduct>>();
+
+            var productAndImg = from product in await productRepository.GetAllAsync()
+                                join img in imgcheck on product.Id equals img.Key into t
+                                from img in t.DefaultIfEmpty()
+                                orderby product.Name                      
+                                select new GetProductDto {
+                                    Name = product.Name,
+                                    Price = product.Price,
+                                    Describe = product.Describe,
+                                    numberOfStars = product.numberOfStars,
+                                    files = (img == null) ? null : img.Select(p => p.Photo)
+                                };
+
+                                
             if(productsDto.Count() == 0)
             {
                 return NotFound();
             }
             
-            return Ok(productsDto);
+            return Ok(productAndImg);
         }
         [HttpGet("Id")]
         public async Task<ActionResult<GetProductDto>> GetProductAsync(Guid Id)
@@ -65,18 +86,21 @@ namespace BackEnd.Controllers
             };
 
             Boolean createProduct = await productRepository.CreateProductAsync(product);
-            foreach (var file in productDto.files)
+            if(productDto.files.Length != 0)
             {
-                ImgProduct imgProduct = new()
+                foreach (var file in productDto.files)
                 {
-                    Id = Guid.NewGuid(),
-                    Photo = await SaveImage(file),
-                    ProductId = product.Id
-                };
-                await imgProductRepository.CreateImgProductAsync(imgProduct);
-                            
+                    ImgProduct imgProduct = new()
+                    {
+                        Id = Guid.NewGuid(),
+                        Photo = await SaveImage(file),
+                        ProductId = product.Id
+                    };
+                    await imgProductRepository.CreateImgProductAsync(imgProduct);
+                                
+                }
             }
-
+            
             return CreatedAtAction(nameof(CreateProductAsync), new {Id = product.Id}, product); 
         }
         [HttpDelete("{Id}")]

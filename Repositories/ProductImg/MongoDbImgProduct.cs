@@ -42,13 +42,12 @@ namespace BackEnd.Repositories
             ImgProduct imgProduct = await imgProductsCollection.Find(filter).SingleOrDefaultAsync();
             return imgProduct;
         }
-        public async Task<IReadOnlyCollection<ImgProduct>> GetImgProductsUserAsync(Guid ProductId)
+        public async Task<IReadOnlyCollection<ImgProduct>> GetImgProductsAsync()
         {
             List<ImgProduct> ListImgProduct = await imgProductsCollection.Find(new BsonDocument()).ToListAsync();
 
-            IEnumerable<ImgProduct> imgUseProduct = from a in ListImgProduct where a.ProductId.Equals(ProductId) select a;
 
-            return imgUseProduct.ToList();
+            return ListImgProduct.ToList();
         }
 
         public async Task UpdateImgProductAsync(Guid Id, ImgProduct imgProduct)
