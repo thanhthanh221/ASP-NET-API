@@ -15,7 +15,10 @@ namespace BackEnd.Helpers
             var credentials = new SigningCredentials(sysmmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature);
 
             JwtHeader header = new JwtHeader(credentials);
+            
 
+            // payLoad gửi đi sẽ bao gồm id của user và ngày đăng nhập
+            // Có thể thêm claim và poliy và  role theo mặc định của identity
             var payload = new JwtPayload(Id.ToString(), null, null, null, DateTime.Today.AddDays(1));
 
             JwtSecurityToken secureToken = new JwtSecurityToken(header, payload);

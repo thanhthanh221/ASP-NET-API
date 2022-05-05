@@ -1,5 +1,7 @@
+using System.IO;
 using BackEnd.Dto;
 using BackEnd.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace BackEnd {
     // Các trường hợp xử lý biến đổi
@@ -19,10 +21,10 @@ namespace BackEnd {
                 Name = product.Name,
                 Price = product.Price,
                 Describe = product.Describe,
-                numberOfStars = product.numberOfStars
+                numberOfStars = product.numberOfStars,
+                files =  null
             };
         }
-        
     }
 
 }

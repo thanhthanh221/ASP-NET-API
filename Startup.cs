@@ -59,6 +59,7 @@ namespace BackEnd
             services.AddSingleton<IItemsRepository, MongodbItemRepositories>(); // khai triển qua Interface
             services.AddSingleton<IProductRepository, MongoDbProductRepository>();
             services.AddSingleton<IImgProduct, MongoDbImgProduct>();
+            services.AddSingleton<ICategoryProduct, MongodbCategoryRepository>();
 
             // SQL thì phải dùng Scoped 
             services.AddScoped<IUserRepository, UserRepository>();

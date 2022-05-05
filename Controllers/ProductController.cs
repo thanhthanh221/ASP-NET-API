@@ -53,7 +53,6 @@ namespace BackEnd.Controllers
                                     numberOfStars = product.numberOfStars,
                                     files = (img == null) ? null : img.Select(p => p.Photo)
                                 };
-
                                 
             if(productsDto.Count() == 0)
             {
@@ -66,6 +65,15 @@ namespace BackEnd.Controllers
         public async Task<ActionResult<GetProductDto>> GetProductAsync(Guid Id)
         {
             GetProductDto productDto = (await productRepository.GetIdAsync(Id)).AsDtoGetProduct();
+
+            productDto.files =  from a in await imgProductRepository.GetImgProductsAsync()
+                                where a.ProductId == Id
+                                select a.Photo ; 
+            if(productDto.files.Count() == 0)
+            {
+                productDto.files = null;
+            }
+                                       
             if(productDto is null)
             {
                 return NotFound();
@@ -81,11 +89,11 @@ namespace BackEnd.Controllers
                 Price = productDto.Price,
                 Describe = productDto.Describe,
                 DateTimeCreate = DateTimeOffset.UtcNow,
-                Id = Guid.NewGuid(),
-                numberOfStars = productDto.numberOfStars
+                Id = Guid.NewGuid()
             };
 
             Boolean createProduct = await productRepository.CreateProductAsync(product);
+            // Xử lý ảnh
             if(productDto.files.Length != 0)
             {
                 foreach (var file in productDto.files)
@@ -115,7 +123,7 @@ namespace BackEnd.Controllers
             return NoContent();            
         }
         [HttpPut("{Id}")]
-        public async Task<ActionResult> UpdateItem(Guid Id, UpdateProductDto productDto)
+        public async Task<ActionResult> UpdateItem(Guid Id,[FromForm] UpdateProductDto productDto)
         {
             Product product = await productRepository.GetIdAsync(Id);
             if(product is null)
@@ -142,13 +150,14 @@ namespace BackEnd.Controllers
                 try
                 {
                     if(!Directory.Exists(_environment.ContentRootPath+ "\\Images\\"))
+                    // Kiểm tra xem đã tồn tại thư mục chưa
                     {
                         Directory.CreateDirectory(_environment.ContentRootPath + "\\Images\\");
                     }
                     using (FileStream fileStream = System.IO.File.Create(_environment.ContentRootPath + "\\Images\\"+file.FileName))
                     {
                         await file.CopyToAsync(fileStream);
-                        await fileStream.FlushAsync();
+                        await fileStream.FlushAsync(); // giải phóng bộ đệm
                         
                         return "\\Images\\" + file.FileName;
                     }
