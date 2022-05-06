@@ -23,6 +23,7 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using BackEnd.Helpers;
+using BackEnd.Entities;
 
 namespace BackEnd
 {
@@ -50,6 +51,13 @@ namespace BackEnd
             BsonSerializer.RegisterSerializer(new ByteArraySerializer(BsonType.String));
 
             MongoDbSettings MongoDBsettings =  Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+
+            // Thêm Identity
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>().
+                    AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(
+                        MongoDBsettings.ConnectionString, "Item_Product");
+
 
             services.AddSingleton<IMongoClient>(servicesProvider => {
                 return new MongoClient(MongoDBsettings.ConnectionString);
@@ -100,6 +108,8 @@ namespace BackEnd
             });
 
             app.UseAuthorization();
+
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {

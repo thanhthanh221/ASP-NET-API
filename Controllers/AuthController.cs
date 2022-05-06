@@ -6,9 +6,11 @@ using System;
 using BackEnd.Helpers;
 using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Identity;
 
 namespace BackEnd.Controllers 
 {
+    // Chỉnh Theo quy trình của Identity
     [ApiController]
     [Route("Auth")]
     public class AuthController : ControllerBase
