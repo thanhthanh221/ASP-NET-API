@@ -10,9 +10,9 @@ namespace BackEnd.Entities
         public IEnumerable<Guid> parentsCategoryId {get; set;} // danh mục cha
         public IEnumerable<Guid> subCategoryId {get; set;}     // Danh mục con
         [Required]
-        public string name {get; set;} 
+        public String name {get; set;} 
         [Required]
-        public string ImgCategory {get; set;}
+        public String imgCategory {get; set;}
         // Danh sách mã sản phẩm
         public IEnumerable<Guid> products {get; set;}
 

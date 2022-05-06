@@ -49,6 +49,8 @@ namespace BackEnd.Controllers
                 CreateDate = DateTimeOffset.UtcNow
             };
             repository.CreateItemAsync(item);
+
+            // Tạo thành công Item
             
             return CreatedAtAction(nameof(GetItem), new {id = item.Id}, item.AsDto());
         }

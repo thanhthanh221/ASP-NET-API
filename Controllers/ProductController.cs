@@ -149,17 +149,17 @@ namespace BackEnd.Controllers
             {
                 try
                 {
-                    if(!Directory.Exists(_environment.ContentRootPath+ "\\Images\\"))
+                    if(!Directory.Exists(_environment.ContentRootPath+ "\\Images\\" + "\\ImgProduct\\"))
                     // Kiểm tra xem đã tồn tại thư mục chưa
                     {
-                        Directory.CreateDirectory(_environment.ContentRootPath + "\\Images\\");
+                        Directory.CreateDirectory(_environment.ContentRootPath + "\\Images\\" + "\\ImgProduct\\");
                     }
-                    using (FileStream fileStream = System.IO.File.Create(_environment.ContentRootPath + "\\Images\\"+file.FileName))
+                    using (FileStream fileStream = System.IO.File.Create(_environment.ContentRootPath + "\\Images\\"+ "\\ImgProduct\\" + file.FileName))
                     {
                         await file.CopyToAsync(fileStream);
                         await fileStream.FlushAsync(); // giải phóng bộ đệm
                         
-                        return "\\Images\\" + file.FileName;
+                        return "\\Images\\"+"\\ImgProduct\\" + file.FileName;
                     }
                 }
                 catch (Exception ex)
