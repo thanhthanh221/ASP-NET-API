@@ -3,11 +3,12 @@ using System;
 using AspNetCore.Identity.MongoDbCore.Models;
 using MongoDbGenericRepository.Attributes;
 
-namespace BackEnd.Repositories
+namespace BackEnd.Entities
 {
     [CollectionName("Roles")]
     public class ApplicationRole : MongoIdentityRole<Guid>
     {
+        
 
         
     }

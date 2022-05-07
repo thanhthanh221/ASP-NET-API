@@ -7,6 +7,8 @@ using BackEnd.Helpers;
 using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BackEnd.Controllers 
 {
@@ -15,78 +17,82 @@ namespace BackEnd.Controllers
     [Route("Auth")]
     public class AuthController : ControllerBase
     {
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly JwtService jwtService;
-        private readonly IUserRepository userRepository;
+        private readonly SignInManager<ApplicationUser> signInManager;
 
-        public AuthController(IUserRepository userRepository, JwtService jwtService )
+        public AuthController( JwtService jwtService,
+                                UserManager<ApplicationUser> userManager ,
+                                SignInManager<ApplicationUser> signInManager )
         {
-            this.userRepository = userRepository;
             this.jwtService = jwtService;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
         }
 
-        [HttpGet]
-        public ActionResult Hello()
-        {
-            
-            return Ok();
-        }
         [HttpPost("Login")]
-        // Đăng nhập bằng tên tài khoản
-        public ActionResult Login(LoginUserDto userDto)
+        // Đăng nhập bằng email
+        public async Task<ActionResult> LoginAsync([FromForm] LoginUserDto LoginDto)
         {
-            User user = userRepository.LoginUser(userDto.Email);
+            ApplicationUser user = await userManager.FindByEmailAsync(LoginDto.Email);
             if(user is null)
             {
                 return BadRequest(new {message = "Email Chưa đăng kí tài khoản"});
             }
-            if(!BCrypt.Net.BCrypt.Verify(userDto.PassWord, user.PassWord))
-            {
-                return BadRequest(new {message = "Mật khẩu không chính xác"});
-            }
-            String jwt = jwtService.generate(user.Id); // Lưu phía sever
-            
+            // Đăng nhập tài khoản
+             Microsoft.AspNetCore.Identity.SignInResult result = await signInManager.PasswordSignInAsync(user, LoginDto.PassWord, false, true);
 
-            // Phía Client sẽ nếu đăng nhập thành công thì Cookie sẽ trả về True
-            Response.Cookies.Append("jwt", jwt , new CookieOptions
-            {
-                HttpOnly = true
-            });
+            if(!result.Succeeded){
+                return Unauthorized(new {message = "Đăng nhập thất bại"});
+            } 
             return Ok(new {
                 message = "thành công"
             });
         }
         [HttpPost("Register")]
-        public ActionResult Register(CreateUserDto userDto)
+        public async Task<ActionResult> RegisterAsync([FromForm] CreateUserDto userDto)
         {
-            User user = new()
+            if (ModelState.IsValid)
             {
-                Id = Guid.NewGuid(),
-                Name = userDto.Name,
-                Email = userDto.Email,
-                PassWord = BCrypt.Net.BCrypt.HashPassword(userDto.PassWord) // Chuyển đổi thành mật khẩu                
-            };
-            userRepository.CreateUser(user);
-            
-            return CreatedAtAction(nameof(Register), new {user = user});
+                ApplicationUser appUser = new ApplicationUser
+                {
+                    UserName = userDto.Name,
+                    Email = userDto.Email
+                };
+                // IdentityResult => userManager.CreateAsync() => Tạo mới một người dùng 
+                IdentityResult result = await userManager.CreateAsync(appUser, userDto.Password);
+                // Nếu đăng kí thành công
+                if (result.Succeeded)
+                    return CreatedAtAction(nameof(RegisterAsync), new {appUser = appUser});
+                else
+                {
+                    foreach (IdentityError error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+            }
+            // Yêu cầu không hợp lệ
+            return BadRequest();
         }
         [HttpGet("Login")]
-        public ActionResult Login()
+        public async Task<ActionResult> Login()
         {
             try
             {
                 String jwt = Request.Cookies["jwt"];
             
-                var token = jwtService.Verify(jwt);
+                JwtSecurityToken token = jwtService.Verify(jwt);
 
                 Guid UserId = Guid.Parse(token.Issuer);
 
-                var user = userRepository.GetById(UserId);
+                ApplicationUser user = await userManager.FindByIdAsync(UserId.ToString());
 
                 return Ok(user);
             }
             catch (System.Exception)
             {
-                
+                // Trả về 401
                 return Unauthorized();
             }
         }

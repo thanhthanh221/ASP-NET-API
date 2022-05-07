@@ -19,12 +19,13 @@ namespace BackEnd.Helpers
 
             // payLoad gửi đi sẽ bao gồm id của user và ngày đăng nhập
             // Có thể thêm claim và poliy và  role theo mặc định của identity
-            var payload = new JwtPayload(Id.ToString(), null, null, null, DateTime.Today.AddDays(1));
+            JwtPayload  payload = new JwtPayload(Id.ToString(), null, null, null, DateTime.Today.AddDays(1));
 
             JwtSecurityToken secureToken = new JwtSecurityToken(header, payload);
 
             return new JwtSecurityTokenHandler().WriteToken(secureToken);
         }
+        // Xác minh jwt
         public JwtSecurityToken Verify(string jwt)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

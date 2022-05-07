@@ -5,16 +5,13 @@ using System.Text.Json.Serialization;
 
 namespace BackEnd.Entities
 {
-    public class User 
+    public class Users : Entities
     {
-        [Required]
-        [Key]
-        public Guid Id { get; set; }
         [Required]
         public String Name {get; set;}
         [Required]
         public String Email {get; set;}
         [Required]
-        [JsonIgnore] public String PassWord {get; set;}
+        public String PassWord {get; set;}
     }
 }

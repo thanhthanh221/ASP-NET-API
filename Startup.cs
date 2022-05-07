@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using BackEnd.Helpers;
 using BackEnd.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace BackEnd
 {
@@ -42,10 +43,6 @@ namespace BackEnd
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<UserDbContext>(options => {
-                string ConllString = Configuration.GetConnectionString(nameof(UserDbContext));
-                options.UseSqlServer(ConllString);
-            });
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
             BsonSerializer.RegisterSerializer(new ByteArraySerializer(BsonType.String));
@@ -69,8 +66,6 @@ namespace BackEnd
             services.AddSingleton<IImgProduct, MongoDbImgProduct>();
             services.AddSingleton<ICategoryProduct, MongodbCategoryRepository>();
 
-            // SQL thì phải dùng Scoped 
-            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<JwtService>();
 
             services.AddControllers(option =>{
@@ -80,6 +75,30 @@ namespace BackEnd
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ASP_NET_API", Version = "v1" });
             });
+                    services.Configure<IdentityOptions> (options => {
+                        // Thiết lập về Password
+                        options.Password.RequireDigit = false; // Không bắt phải có số
+                        options.Password.RequireLowercase = false; // Không bắt phải có chữ thường
+                        options.Password.RequireNonAlphanumeric = false; // Không bắt ký tự đặc biệt
+                        options.Password.RequireUppercase = false; // Không bắt buộc chữ in
+                        options.Password.RequiredLength = 3; // Số ký tự tối thiểu của password
+                        options.Password.RequiredUniqueChars = 1; // Số ký tự riêng biệt
+
+                        // Cấu hình Lockout - khóa user
+                        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes (5); // Khóa 5 phút
+                        options.Lockout.MaxFailedAccessAttempts = 5; // Thất bại 5 lầ thì khóa
+                        options.Lockout.AllowedForNewUsers = true;
+
+                        // Cấu hình về User.
+                        options.User.AllowedUserNameCharacters = // các ký tự đặt tên user
+                            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                        options.User.RequireUniqueEmail = true;  // Email là duy nhất
+
+                        // Cấu hình đăng nhập.
+                        options.SignIn.RequireConfirmedEmail = false;            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
+                        options.SignIn.RequireConfirmedPhoneNumber = false;     // Xác thực số điện thoại
+
+                    });
             services.AddHealthChecks()
                 .AddMongoDb(
                     MongoDBsettings.ConnectionString, 
