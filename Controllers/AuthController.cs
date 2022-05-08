@@ -44,7 +44,13 @@ namespace BackEnd.Controllers
 
             if(!result.Succeeded){
                 return Unauthorized(new {message = "Đăng nhập thất bại"});
-            } 
+            }
+            String jwt = jwtService.generate(user.Id); // Lưu phía sever
+            // Phía Client sẽ nếu đăng nhập thành công thì Cookie sẽ trả về True
+            Response.Cookies.Append("jwt", jwt , new CookieOptions
+            {
+                HttpOnly = true
+            });
             return Ok(new {
                 message = "thành công"
             });
