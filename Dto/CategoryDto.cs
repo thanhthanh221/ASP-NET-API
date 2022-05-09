@@ -10,12 +10,10 @@ namespace BackEnd.Dto
     {
         [Required]
         public String name {get; init;}
-        public IEnumerable<Guid> parentsCategoryId {get; init;}
-
-        public IEnumerable<Guid> subCategoryId {get; init;}
-
         public int sumProduct {get; init;}
         [Required]
         public string imgCategory {get; set;}
+        public IEnumerable<Guid> parentsCategoryId {get; init;}
+        public IEnumerable<Guid> subCategoryId {get; init;}
     }
 }

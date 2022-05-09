@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
+using BackEnd.Services;
 
 namespace BackEnd.Controllers
 {
@@ -21,6 +22,8 @@ namespace BackEnd.Controllers
         private readonly IProductRepository productRepository;
         private readonly IImgProduct imgProductRepository;
 
+        private static int Page_Size {get; set;} = 5;
+
         public ProductController(IProductRepository productRepository,
             IWebHostEnvironment environment,
             IImgProduct imgProductRepository)
@@ -31,7 +34,7 @@ namespace BackEnd.Controllers
             
         }
         [HttpGet]
-        public async Task<ActionResult> GetProductsAsync()
+        public async Task<ActionResult> GetProductsAsync(int page)
         {
             // Trả về sản phẩm
             IEnumerable<GetProductDto> productsDto = (await productRepository.GetAllAsync()).ToList().Select(p => p.AsDtoGetProduct());
@@ -42,7 +45,8 @@ namespace BackEnd.Controllers
 
             List<IGrouping<Guid, ImgProduct>> hash = new List<IGrouping<Guid, ImgProduct>>();
 
-            var productAndImg = from product in await productRepository.GetAllAsync()
+            // Tổng bộ tất cả các sản phẩm trả vể
+            var productAndImg = (from product in await productRepository.GetAllAsync()
                                 join img in imgcheck on product.Id equals img.Key into t
                                 from img in t.DefaultIfEmpty()
                                 orderby product.Name                      
@@ -52,19 +56,36 @@ namespace BackEnd.Controllers
                                     Describe = product.Describe,
                                     numberOfStars = product.numberOfStars,
                                     files = (img == null) ? null : img.Select(p => p.Photo)
-                                };
+                                })
+                                .Skip((page - 1)* Page_Size).Take(Page_Size);
+
+            var productAndImgPage = new {
+                page = page,
+                data =  productAndImg
+            };
                                 
-            if(productsDto.Count() == 0)
+            if(productAndImg.Count() == 0)
             {
-                return NotFound();
+                return NotFound(new 
+                    {
+                    message = "Không có sản phẩm nào"
+                });
             }
             
-            return Ok(productAndImg);
+            return Ok(productAndImgPage);
         }
         [HttpGet("Id")]
         public async Task<ActionResult<GetProductDto>> GetProductAsync(Guid Id)
         {
-            GetProductDto productDto = (await productRepository.GetIdAsync(Id)).AsDtoGetProduct();
+            Product product = await productRepository.GetIdAsync(Id);
+            if(product == null)
+            {
+                return NotFound(new 
+                {
+                    message = "Không có sản phẩm"
+                });
+            }
+            GetProductDto productDto = product.AsDtoGetProduct();
 
             productDto.files =  from a in await imgProductRepository.GetImgProductsAsync()
                                 where a.ProductId == Id
@@ -101,7 +122,7 @@ namespace BackEnd.Controllers
                     ImgProduct imgProduct = new()
                     {
                         Id = Guid.NewGuid(),
-                        Photo = await SaveImage(file),
+                        Photo = await UpLoadFileService.SaveImage(file, "ImgProduct"),
                         ProductId = product.Id
                     };
                     await imgProductRepository.CreateImgProductAsync(imgProduct);
@@ -120,6 +141,17 @@ namespace BackEnd.Controllers
                 return NotFound();
             }
             await productRepository.DeleteProductAsync(product);
+
+            var imgcheck = from a in await imgProductRepository.GetImgProductsAsync()
+                            where a.Id == Id
+                            select a;
+
+            foreach (var item in imgcheck)
+            {
+                UpLoadFileService.DeleteImage(item.Photo, "ImgProduct"); 
+                await imgProductRepository.DeleteImgProductAsync(item);            
+            }
+
             return NoContent();            
         }
         [HttpPut("{Id}")]
@@ -132,7 +164,7 @@ namespace BackEnd.Controllers
             }
             Product productUpdate = new(){
                 Id = product.Id,
-                Name = productDto.Name,
+                Name = productDto.Name,         
                 Price = productDto.Price,
                 Describe = productDto.Describe,
                 DateTimeCreate = product.DateTimeCreate
@@ -159,7 +191,7 @@ namespace BackEnd.Controllers
                         await file.CopyToAsync(fileStream);
                         await fileStream.FlushAsync(); // giải phóng bộ đệm
                         
-                        return "\\Images\\"+"\\ImgProduct\\" + file.FileName;
+                        return file.FileName;
                     }
                 }
                 catch (Exception ex)

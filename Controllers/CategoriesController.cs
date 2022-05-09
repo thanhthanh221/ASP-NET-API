@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
+using BackEnd.Services;
 
 namespace BackEnd.Controllers
 {
@@ -38,12 +39,12 @@ namespace BackEnd.Controllers
         [HttpGet("Id")]
         public async Task<ActionResult<Category>> GetCategory(Guid Id)
         {
-            GetCategoryDto categoryDto = (await categoryProduct.GetCategoryAsync(Id)).AsGetCategory();
-            if(categoryDto == null)
+            Category category = (await categoryProduct.GetCategoryAsync(Id));
+            if(category == null)
             {
                 return NotFound();
             }
-            return Ok(categoryDto);
+            return Ok(category);
         }
         [HttpPost]
         public async Task<ActionResult<GetCategoryDto>> PostCategory([FromForm] CreateCategoryDto categoryDto)
@@ -54,8 +55,8 @@ namespace BackEnd.Controllers
                 name = categoryDto.name,
                 parentsCategoryId = categoryDto.parentsCategoryId,
                 subCategoryId = categoryDto.subCategoryId,
-                products = categoryDto.products,
-                imgCategory = await SaveImage(categoryDto.imgCategory)
+                products =  categoryDto.products,
+                imgCategory = await UpLoadFileService.SaveImage(categoryDto.imgCategory, "ImgCategory")
                 
             };
             await categoryProduct.CreateCategoryAsync(categoryProductValue);            
@@ -74,52 +75,9 @@ namespace BackEnd.Controllers
             {
                 return NotFound();
             }
-            DeleteImage(category.imgCategory);
+            UpLoadFileService.DeleteImage(category.imgCategory, "ImgCategory");
             await categoryProduct.DeleteCategoryAsync(category);
             return NoContent();
-
-
-        }
-        // Xử lý nhập file ảnh
-        [NonAction]
-        public async Task<String> SaveImage(IFormFile file)
-        {
-            if(file.Length > 0)
-            {
-                try
-                {
-                    if(!Directory.Exists(_environment.ContentRootPath+ "\\Images\\" + "\\imgCategory\\"))
-                    // Kiểm tra xem đã tồn tại thư mục chưa
-                    {
-                        Directory.CreateDirectory(_environment.ContentRootPath + "\\Images\\" + "\\imgCategory\\");
-                    }
-                    using (FileStream fileStream = System.IO.File.Create(_environment.ContentRootPath + "\\Images\\"+ "\\imgCategory\\" + file.FileName))
-                    {
-                        await file.CopyToAsync(fileStream);
-                        await fileStream.FlushAsync(); // giải phóng bộ đệm
-                        
-                        return file.FileName;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return ex.ToString();
-                }
-            }
-            else
-            {
-                return "Không Up được file";
-            }
-        }
-        [NonAction]  
-        public void DeleteImage(String imageName)
-        {
-            var imagePath = Path.Combine(_environment.ContentRootPath + "\\Images\\" + "\\imgCategory\\" + imageName);
-            if(System.IO.File.Exists(imagePath))
-            {
-                System.IO.File.Delete(imagePath);
-            }
-
         }
     }
 }
