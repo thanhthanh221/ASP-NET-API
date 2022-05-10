@@ -11,9 +11,11 @@ using System.IO;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using BackEnd.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BackEnd.Controllers
 {
+    [Authorize]
     [Route("Product")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -143,7 +145,7 @@ namespace BackEnd.Controllers
             await productRepository.DeleteProductAsync(product);
 
             var imgcheck = from a in await imgProductRepository.GetImgProductsAsync()
-                            where a.Id == Id
+                            where a.ProductId == Id
                             select a;
 
             foreach (var item in imgcheck)
@@ -172,37 +174,6 @@ namespace BackEnd.Controllers
             await productRepository.UpdateProductAsync(productUpdate);
 
             return NoContent();
-        }
-        // Xử lý nhập file ảnh
-        [NonAction]
-        public async Task<string> SaveImage(IFormFile file)
-        {
-            if(file.Length > 0)
-            {
-                try
-                {
-                    if(!Directory.Exists(_environment.ContentRootPath+ "\\Images\\" + "\\ImgProduct\\"))
-                    // Kiểm tra xem đã tồn tại thư mục chưa
-                    {
-                        Directory.CreateDirectory(_environment.ContentRootPath + "\\Images\\" + "\\ImgProduct\\");
-                    }
-                    using (FileStream fileStream = System.IO.File.Create(_environment.ContentRootPath + "\\Images\\"+ "\\ImgProduct\\" + file.FileName))
-                    {
-                        await file.CopyToAsync(fileStream);
-                        await fileStream.FlushAsync(); // giải phóng bộ đệm
-                        
-                        return file.FileName;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return ex.ToString();
-                }
-            }
-            else
-            {
-                return "Không Up được file";
-            }
         }
     }
 }

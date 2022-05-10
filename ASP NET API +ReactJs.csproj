@@ -11,6 +11,7 @@
     <!--Identity với CSDL mongoDb - Phải cài đúng với bản MongoDriver -->
     <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="3.1.1" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0">

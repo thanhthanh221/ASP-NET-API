@@ -45,12 +45,6 @@ namespace BackEnd.Controllers
             if(!result.Succeeded){
                 return Unauthorized(new {message = "Đăng nhập thất bại"});
             }
-            String jwt = jwtService.generate(user.Id); // Lưu phía sever
-            // Phía Client sẽ nếu đăng nhập thành công thì Cookie sẽ trả về True
-            Response.Cookies.Append("jwt", jwt , new CookieOptions
-            {
-                HttpOnly = true
-            });
             return Ok(new {
                 message = "thành công"
             });
@@ -58,6 +52,19 @@ namespace BackEnd.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult> RegisterAsync([FromForm] CreateUserDto userDto)
         {
+            ApplicationUser useCheckEmailExists = await userManager.FindByEmailAsync(userDto.Email);
+
+            ApplicationUser useCheckNameExists = await userManager.FindByNameAsync(userDto.Name); 
+
+            if(useCheckEmailExists != null || useCheckNameExists != null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new 
+                { 
+                    Status = "Error", 
+                    Message = "Tài Khoản đã tồn tại" 
+                });
+            }
+
             if (ModelState.IsValid)
             {
                 ApplicationUser appUser = new ApplicationUser
@@ -67,6 +74,8 @@ namespace BackEnd.Controllers
                 };
                 // IdentityResult => userManager.CreateAsync() => Tạo mới một người dùng 
                 IdentityResult result = await userManager.CreateAsync(appUser, userDto.Password);
+
+                var userRole = await userManager.GetRolesAsync(appUser);
                 // Nếu đăng kí thành công
                 if (result.Succeeded)
                     return CreatedAtAction(nameof(RegisterAsync), new {appUser = appUser});

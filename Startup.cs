@@ -25,6 +25,9 @@ using Microsoft.EntityFrameworkCore;
 using BackEnd.Helpers;
 using BackEnd.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace BackEnd
 {
@@ -70,6 +73,27 @@ namespace BackEnd
 
             services.AddControllers(option =>{
                 option.SuppressAsyncSuffixInActionNames = false; //Phương thức xóa bỏ hậu tố bất đồng bộ (Async)
+            });
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            // Adding Jwt Bearer
+            .AddJwtBearer(options =>
+            {
+                IConfiguration identityJwt= Configuration.GetSection("JWT");
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = identityJwt["ValidAudience"],
+                    ValidIssuer = identityJwt["ValidIssuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(identityJwt["Secret"]))
+                };
             });
             services.AddSwaggerGen(c =>
             {
@@ -126,9 +150,9 @@ namespace BackEnd
                 buider.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
             });
 
-            app.UseAuthorization();
-
             app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
