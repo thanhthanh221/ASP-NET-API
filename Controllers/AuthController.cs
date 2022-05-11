@@ -51,6 +51,7 @@ namespace BackEnd.Controllers
             var authClaims = new List<Claim> // Tạo Claim Liên Quan User
             {
                 new Claim(ClaimTypes.Name, user.UserName),
+                new Claim("Id", user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
@@ -87,7 +88,7 @@ namespace BackEnd.Controllers
             if (ModelState.IsValid)
             {
                 ApplicationUser appUser = new ApplicationUser
-                {
+                {   
                     UserName = userDto.Name,
                     Email = userDto.Email
                 };
