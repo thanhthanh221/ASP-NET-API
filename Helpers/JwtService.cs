@@ -1,46 +1,36 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BackEnd.Helpers
 {
     public class JwtService
     {
+        private readonly IConfiguration Configuration;
         private string secureKey = "BuiVietQuangCheckPass";
-        public string generate(Guid Id)
+
+        public JwtService(IConfiguration configuration)
         {
-            var sysmmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secureKey));
-
-            var credentials = new SigningCredentials(sysmmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature);
-
-            JwtHeader header = new JwtHeader(credentials);
-            
-
-            // payLoad gửi đi sẽ bao gồm id của user và ngày đăng nhập
-            // Có thể thêm claim và poliy và  role theo mặc định của identity
-            JwtPayload  payload = new JwtPayload(Id.ToString(), null, null, null, DateTime.Today.AddDays(1));
-
-            JwtSecurityToken secureToken = new JwtSecurityToken(header, payload);
-
-            return new JwtSecurityTokenHandler().WriteToken(secureToken);
+            Configuration = configuration;
         }
-        // Xác minh jwt
-        public JwtSecurityToken Verify(string jwt)
+
+        public JwtSecurityToken GetToken(List<Claim> authClaims)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            Byte[] key = Encoding.ASCII.GetBytes(secureKey);
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]));
 
-            tokenHandler.ValidateToken(jwt, new TokenValidationParameters
-                {   
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                }, out SecurityToken validatedToken);
+            var token = new JwtSecurityToken(
+                issuer: Configuration["JWT:ValidIssuer"], // Nơi được xác thực bằng JWT
+                audience: Configuration["JWT:ValidAudience"],
+                expires: DateTime.Now.AddHours(3),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                );
 
-            return (JwtSecurityToken) validatedToken;
-
+            return token;
         }
         
     }

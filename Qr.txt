@@ -1,0 +1,6 @@
+- Xác thực bằng policy dùng bằng Claim 
++ Claim Role
++ Claim User
+
+1 : Người mua hàng thì sẽ có quyền được Nhận xét sản phẩm và Đánh giá sao Sản phẩm (Chỉ 1 lần)
+=> Sau khi người dùng đánh giá thì sẽ xóa luôn Claim này đi => Mất Policy

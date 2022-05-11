@@ -9,6 +9,10 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
 
 namespace BackEnd.Controllers 
 {
@@ -20,6 +24,7 @@ namespace BackEnd.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly JwtService jwtService;
         private readonly SignInManager<ApplicationUser> signInManager;
+        public IConfiguration Configuration { get; }
 
         public AuthController( JwtService jwtService,
                                 UserManager<ApplicationUser> userManager ,
@@ -35,17 +40,31 @@ namespace BackEnd.Controllers
         public async Task<ActionResult> LoginAsync([FromForm] LoginUserDto LoginDto)
         {
             ApplicationUser user = await userManager.FindByEmailAsync(LoginDto.Email);
-            if(user is null)
+            if(user is null || !( await userManager.CheckPasswordAsync(user, LoginDto.PassWord)))
             {
-                return BadRequest(new {message = "Email Chưa đăng kí tài khoản"});
+                return Unauthorized(new { message = "Email Chưa đăng kí tài khoản  Hoặc TK MK không chính xác"});
             }
-            // Đăng nhập tài khoản
-             Microsoft.AspNetCore.Identity.SignInResult result = await signInManager.PasswordSignInAsync(user, LoginDto.PassWord, false, true);
+            
+            var userRoles = await userManager.GetRolesAsync(user);
+            
+            // Những thứ được gửi đi
+            var authClaims = new List<Claim> // Tạo Claim Liên Quan User
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
 
-            if(!result.Succeeded){
-                return Unauthorized(new {message = "Đăng nhập thất bại"});
+            foreach (var userRole in userRoles)      // Claim ở Role
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
             }
+            
+            // Chuyển thành token
+            var token = jwtService.GetToken(authClaims);
+
             return Ok(new {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                expiration = token.ValidTo,
                 message = "thành công"
             });
         }
@@ -90,36 +109,6 @@ namespace BackEnd.Controllers
             // Yêu cầu không hợp lệ
             return BadRequest();
         }
-        [HttpGet("Login")]
-        public async Task<ActionResult> Login()
-        {
-            try
-            {
-                String jwt = Request.Cookies["jwt"];
-            
-                JwtSecurityToken token = jwtService.Verify(jwt);
-
-                Guid UserId = Guid.Parse(token.Issuer);
-
-                ApplicationUser user = await userManager.FindByIdAsync(UserId.ToString());
-
-                return Ok(user);
-            }
-            catch (System.Exception)
-            {
-                // Trả về 401
-                return Unauthorized();
-            }
-        }
-        [HttpGet("Logout")]
-        public ActionResult Logout()
-        {
-            Response.Cookies.Delete("jwt");
-            
-            return Ok(new {
-                message = "Thành Công"
-            });
-        }
-
     }
+    
 }

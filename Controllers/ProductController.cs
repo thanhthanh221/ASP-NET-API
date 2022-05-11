@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BackEnd.Controllers
 {
-    [Authorize]
     [Route("Product")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -103,6 +102,7 @@ namespace BackEnd.Controllers
             }
             return productDto;
         }
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult> CreateProductAsync([FromForm] CreateProductDto productDto)
         {
@@ -134,6 +134,7 @@ namespace BackEnd.Controllers
             
             return CreatedAtAction(nameof(CreateProductAsync), new {Id = product.Id}, product); 
         }
+        [Authorize]
         [HttpDelete("{Id}")]
         public async Task<ActionResult> DeleteProductAsync(Guid Id)
         {
@@ -157,6 +158,7 @@ namespace BackEnd.Controllers
             return NoContent();            
         }
         [HttpPut("{Id}")]
+        [Authorize]
         public async Task<ActionResult> UpdateItem(Guid Id,[FromForm] UpdateProductDto productDto)
         {
             Product product = await productRepository.GetIdAsync(Id);
