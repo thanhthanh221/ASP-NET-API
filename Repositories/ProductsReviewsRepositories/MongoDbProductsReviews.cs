@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BackEnd.Entities;
 using MongoDB.Bson;
@@ -34,18 +35,9 @@ namespace BackEnd.Repositories
             var filter = filterBuilder.Eq(p => p.Id,productsReviews.Id);
             await PrReviewsCollection.DeleteOneAsync(filter);
         }
-
-        public async Task<ProductsReviews> GetProductsReviewAsync(Guid Id)
+        public async Task<IEnumerable<ProductsReviews>> GetProductsReviewsAsync(Guid ProductId)
         {
-            FilterDefinition<ProductsReviews> Filter = filterBuilder.Eq(PrR => PrR.Id, Id);
-            ProductsReviews productsReviews = await PrReviewsCollection.Find(Filter).SingleOrDefaultAsync();
-            
-            return productsReviews;
-        }
-
-        public async Task<IEnumerable<ProductsReviews>> GetProductsReviewsAsync()
-        {
-            return await PrReviewsCollection.Find(new BsonDocument()).ToListAsync();
+            return (await PrReviewsCollection.Find(new BsonDocument()).ToListAsync()).Where(p => p.ProductId == ProductId);
         }
 
         public async Task UpdateProductsReviewsAsync(ProductsReviews productsReviews)

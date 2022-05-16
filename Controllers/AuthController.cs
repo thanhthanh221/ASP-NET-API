@@ -22,17 +22,20 @@ namespace BackEnd.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly RoleManager<ApplicationRole> roleManager;
         private readonly JwtService jwtService;
         private readonly SignInManager<ApplicationUser> signInManager;
         public IConfiguration Configuration { get; }
 
         public AuthController( JwtService jwtService,
                                 UserManager<ApplicationUser> userManager ,
-                                SignInManager<ApplicationUser> signInManager )
+                                SignInManager<ApplicationUser> signInManager ,
+                                RoleManager<ApplicationRole> roleManager )
         {
             this.jwtService = jwtService;
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.roleManager = roleManager;
         }
 
         [HttpPost("Login")]
@@ -68,6 +71,38 @@ namespace BackEnd.Controllers
                 expiration = token.ValidTo,
                 message = "thành công"
             });
+        }
+        [HttpPost("RegisterBuyer")]
+        public async Task<IActionResult> RegisterSeller([FromForm] CreateUserDto userDto)
+        {
+            ApplicationUser useCheckEmailExists = await userManager.FindByEmailAsync(userDto.Email);
+
+            ApplicationUser useCheckNameExists = await userManager.FindByNameAsync(userDto.Name); 
+
+            if(useCheckEmailExists != null || useCheckNameExists != null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new 
+                { 
+                    Status = "Error", 
+                    Message = "Tài Khoản đã tồn tại" 
+                });
+            }
+            ApplicationUser appUser = new ApplicationUser
+                {   
+                    UserName = userDto.Name,
+                    Email = userDto.Email
+                };
+                // IdentityResult => userManager.CreateAsync() => Tạo mới một người dùng 
+            IdentityResult result = await userManager.CreateAsync(appUser, userDto.Password);
+            // Nếu trong CSDl vẫn chưa có Role này
+            if(await roleManager.FindByNameAsync(UserRoles.Buyer) == null) 
+            {
+                IdentityResult resultRole = await roleManager.CreateAsync(new ApplicationRole() { Name = UserRoles.Buyer });
+            }
+            await userManager.AddToRoleAsync(appUser, (await roleManager.FindByNameAsync(UserRoles.Buyer)).Name);
+                  
+
+            return Ok(new { Status = "Thành Công", Message = "Tạo Thành công một người bán!" });
         }
         [HttpPost("Register")]
         public async Task<ActionResult> RegisterAsync([FromForm] CreateUserDto userDto)
