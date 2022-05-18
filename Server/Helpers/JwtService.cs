@@ -32,6 +32,23 @@ namespace BackEnd.Helpers
 
             return token;
         }
+        public JwtSecurityToken Verify(string jwt)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            Byte[] key = Encoding.ASCII.GetBytes(secureKey);
+
+            tokenHandler.ValidateToken(jwt, new TokenValidationParameters
+                {   
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = Configuration["JWT:ValidAudience"],
+                    ValidIssuer = Configuration["JWT:ValidIssuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
+                }, out SecurityToken validatedToken);
+
+            return (JwtSecurityToken) validatedToken;
+
+        }
         
     }
 }

@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box; /*Khoanh vùng tô màu từ border box*/
+    -webkit-tap-highlight-color: transparent; /*Người dùng nhấp vào thì sẽ chuyển đổi về kiểu (transparent : Khoog có gì)*/
+    user-select: none; /*Kiểm soát người dùng chọn văn bản hay không*/
+
+}
+html {
+    font-size: 13px;
+}
+body {
+    font-family: "Roboto", sans-serif; // Phong cách chữ
+}
+ul {
+    list-style-type: none; /*Hiển thị ra của List kiểu gì(none là không)*/
+}
+a {
+    text-decoration: none; // Thiết lập gạch chân
+    color: unset;
+}
+
+@each $color, $val in $colors {
+    .color-#{$color} {
+        color: $val
+    }
+    .bg-#{$color} {
+        background-color: $val
+    }
+}
+
+@each $var in $numbers {
+    
+}
