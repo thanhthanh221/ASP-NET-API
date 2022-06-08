@@ -17,6 +17,7 @@ namespace BackEnd.Controllers
 {
     [Route("Product")]
     [ApiController]
+    [Authorize]
     public class ProductController : ControllerBase
     {
         private static IWebHostEnvironment _environment;

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
-import { withRouter } from 'react-router'
-
 import { useDispatch } from 'react-redux'
 
 import { addItem } from '../redux/shopping-cart/cartItemsSlide'
@@ -11,9 +9,9 @@ import { remove } from '../redux/product-modal/productModalSlice'
 import Button from './Button'
 import numberWithCommas from '../utils/numberWithCommas'
 
-const ProductView = props => {
+const ProductView = (props) => {
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch() // được lấy từ trong redux ra
 
     let product = props.product
 
@@ -32,7 +30,8 @@ const ProductView = props => {
     const [previewImg, setPreviewImg] = useState(product.image01)
 
     const [descriptionExpand, setDescriptionExpand] = useState(false)
-
+    
+    //Chưa gán giá trị cho nó
     const [color, setColor] = useState(undefined)
 
     const [size, setSize] = useState(undefined)
@@ -46,7 +45,8 @@ const ProductView = props => {
             setQuantity(quantity - 1 < 1 ? 1 : quantity - 1)
         }
     }
-
+    
+    // Gọi khi mà product thay đổi
     useEffect(() => {
         setPreviewImg(product.image01)
         setQuantity(1)
@@ -56,7 +56,7 @@ const ProductView = props => {
 
     const check = () => {
         if (color === undefined) {
-            alert('Vui lòng chọn màu sắc!')
+            alert('Vui lòng chọn màu sắc!')  // Hiện ra 1 cửa sổ cảnh báo
             return false
         }
 
@@ -69,6 +69,7 @@ const ProductView = props => {
     }
 
     const addToCart = () => {
+        // Nếu người dùng chọn xong màu sắc thì nhận sản phẩm
         if (check()) {
             let newItem = {
                 slug: product.slug,
@@ -210,4 +211,4 @@ ProductView.propTypes = {
     product: PropTypes.object
 }
 
-export default withRouter(ProductView)
+export default ProductView

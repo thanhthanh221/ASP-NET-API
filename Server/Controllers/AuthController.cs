@@ -37,6 +37,26 @@ namespace BackEnd.Controllers
             this.signInManager = signInManager;
             this.roleManager = roleManager;
         }
+        [HttpGet]
+        [Authorize]
+        public ActionResult Login()
+        {
+            try
+            {
+                var token = jwtService.Verify(jwtService.jwt);
+
+                Guid UserId = Guid.Parse(token.Issuer);
+
+                string user = null;
+
+                return Ok(user);
+            }
+            catch (System.Exception)
+            {
+
+                return Unauthorized();
+            }
+        }
 
         [HttpPost("Login")]
         // Đăng nhập bằng email
@@ -65,9 +85,10 @@ namespace BackEnd.Controllers
             
             // Chuyển thành token
             var token = jwtService.GetToken(authClaims);
+            jwtService.jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
             return Ok(new {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
+                token = jwtService.jwt,
                 expiration = token.ValidTo,
                 message = "thành công"
             });

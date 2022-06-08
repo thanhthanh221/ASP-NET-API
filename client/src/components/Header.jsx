@@ -42,6 +42,7 @@ const Header = () => {
         };
     }, []);
 
+    // xử lý của UseRef
     const menuLeft = useRef(null)
 
     const menuToggle = () => menuLeft.current.classList.toggle('active')
@@ -50,7 +51,7 @@ const Header = () => {
         <div className="header" ref={headerRef}>
             <div className="container">
                 <div className="header__logo">
-                    <Link to="/">
+                    <Link to='/'>
                         <img src={logo} alt="" />
                     </Link>
                 </div>
@@ -69,6 +70,7 @@ const Header = () => {
                                     className={`header__menu__item header__menu__left__item ${index === activeNav ? 'active' : ''}`}
                                     onClick={menuToggle}
                                 >
+                                    {/* Chuyển hướng đến */}
                                     <Link to={item.path}>
                                         <span>{item.display}</span>
                                     </Link>

@@ -12,6 +12,7 @@ namespace BackEnd.Helpers
     {
         private readonly IConfiguration Configuration;
         private string secureKey = "BuiVietQuangCheckPass";
+        public string jwt {get; set;}
 
         public JwtService(IConfiguration configuration)
         {

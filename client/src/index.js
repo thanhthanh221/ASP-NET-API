@@ -8,12 +8,13 @@ import { Provider } from 'react-redux'
 import './assets/boxicons-2.0.7/css/boxicons.min.css'
 import './sass/index.scss'
 
-import Layout from './components/Layout'
+import RoutesProject from './routes/Routes';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <Layout />
+    {/* Redux ôm trước */}
+    <Provider store={store}> 
+      <RoutesProject />
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
