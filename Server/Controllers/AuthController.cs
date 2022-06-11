@@ -13,6 +13,9 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace BackEnd.Controllers 
 {
@@ -37,27 +40,6 @@ namespace BackEnd.Controllers
             this.signInManager = signInManager;
             this.roleManager = roleManager;
         }
-        [HttpGet]
-        [Authorize]
-        public ActionResult Login()
-        {
-            try
-            {
-                var token = jwtService.Verify(jwtService.jwt);
-
-                Guid UserId = Guid.Parse(token.Issuer);
-
-                string user = null;
-
-                return Ok(user);
-            }
-            catch (System.Exception)
-            {
-
-                return Unauthorized();
-            }
-        }
-
         [HttpPost("Login")]
         // Đăng nhập bằng email
         public async Task<ActionResult> LoginAsync([FromForm] LoginUserDto LoginDto)
@@ -90,7 +72,11 @@ namespace BackEnd.Controllers
             return Ok(new {
                 token = jwtService.jwt,
                 expiration = token.ValidTo,
-                message = "thành công"
+                message = "thành công",
+                Obj_user = new {
+                    name = user.UserName,
+                    role = user.Roles != null ? user.Roles : null,
+                }
             });
         }
         [HttpPost("RegisterBuyer")]

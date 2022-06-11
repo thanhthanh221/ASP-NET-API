@@ -42,7 +42,7 @@ const Header = () => {
         };
     }, []);
 
-    // xử lý của UseRef
+    // xử lý của UseRef 
     const menuLeft = useRef(null)
 
     const menuToggle = () => menuLeft.current.classList.toggle('active')

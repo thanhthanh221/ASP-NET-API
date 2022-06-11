@@ -33,6 +33,7 @@ namespace BackEnd.Helpers
 
             return token;
         }
+        // giải thuật jwt
         public JwtSecurityToken Verify(string jwt)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -48,7 +49,6 @@ namespace BackEnd.Helpers
                 }, out SecurityToken validatedToken);
 
             return (JwtSecurityToken) validatedToken;
-
         }
         
     }
