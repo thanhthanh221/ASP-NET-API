@@ -13,9 +13,6 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
-using System.Linq;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace BackEnd.Controllers 
 {
