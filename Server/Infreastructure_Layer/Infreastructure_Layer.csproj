@@ -3,15 +3,18 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+    <Version>1.0.0</Version>
+    <Authors>BuiQuang</Authors>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Domain_Layer" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.11.4" />
     <PackageReference Include="MongoDB.Driver.Core" Version="2.11.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0." />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0." />
   </ItemGroup>
 
 </Project>
