@@ -1,8 +1,9 @@
 using System;
+using Domain_Layer.Base;
 
 namespace BackEnd.Entities
 {
-    public class Repository : Entities
+    public class Repository : BaseEntity
     {
         public Guid WarehomeId {get; set;}
         public Guid UserId {get; set;}

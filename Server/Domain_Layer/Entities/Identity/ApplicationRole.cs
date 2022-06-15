@@ -1,11 +1,10 @@
 using System;
-// Setup Các thuộc tính liên quan đến Identity
 using AspNetCore.Identity.MongoDbCore.Models;
 using MongoDbGenericRepository.Attributes;
 
-namespace BackEnd.Entities
+namespace Domain_Layer.Entities.Identity
 {
-    [CollectionName("Roles")]
+   [CollectionName("Roles")]
     public class ApplicationRole : MongoIdentityRole<Guid>
     {
         

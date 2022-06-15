@@ -11,6 +11,8 @@ using System.IO;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using BackEnd.Services;
+using Domain_Layer.Entities;
+using Infreastructure_Layer.Data.Repositories;
 
 namespace BackEnd.Controllers
 {
@@ -19,10 +21,10 @@ namespace BackEnd.Controllers
     public class CategoriesController : ControllerBase
     {
         private static IWebHostEnvironment _environment;
-        private readonly ICategoryProduct categoryProduct;
+        private readonly MongoDbRepository<Category> categoryProduct;
 
         public CategoriesController(
-            ICategoryProduct categoryProduct,
+            MongoDbRepository<Category> categoryProduct,
             IWebHostEnvironment environment)
         {
             _environment = environment;
@@ -33,13 +35,13 @@ namespace BackEnd.Controllers
         public async Task<ActionResult> GetCategories()
         {
             IReadOnlyCollection<Category> categories = new List<Category>();
-            categories = (await categoryProduct.GetCategorysAsync()).ToList();
+            categories = await categoryProduct.GetAllAsync();
             return Ok(categories);
         }
         [HttpGet("Id")]
         public async Task<ActionResult<Category>> GetCategory(Guid Id)
         {
-            Category category = (await categoryProduct.GetCategoryAsync(Id));
+            Category category = (await categoryProduct.GetAsync(Id));
             if(category == null)
             {
                 return NotFound();
@@ -59,7 +61,7 @@ namespace BackEnd.Controllers
                 imgCategory = await UpLoadFileService.SaveImage(categoryDto.imgCategory, "ImgCategory")
                 
             };
-            await categoryProduct.CreateCategoryAsync(categoryProductValue);            
+            await categoryProduct.CreateAsync(categoryProductValue);            
             
             return CreatedAtAction(nameof(PostCategory), new {Id = categoryProductValue.Id});
         }
@@ -70,13 +72,13 @@ namespace BackEnd.Controllers
             {
                 return NotFound();
             }
-            Category category = (await categoryProduct.GetCategoryAsync(Id));
+            Category category = (await categoryProduct.GetAsync(Id));
             if(category == null)
             {
                 return NotFound();
             }
             UpLoadFileService.DeleteImage(category.imgCategory, "ImgCategory");
-            await categoryProduct.DeleteCategoryAsync(category);
+            await categoryProduct.DeleteAsync(Id);
             return NoContent();
         }
     }

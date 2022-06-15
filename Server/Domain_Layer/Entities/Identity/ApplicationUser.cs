@@ -1,9 +1,8 @@
 using System;
-// Setup Các thuộc tính liên quan đến Identity
 using AspNetCore.Identity.MongoDbCore.Models;
 using MongoDbGenericRepository.Attributes;
 
-namespace BackEnd.Entities
+namespace Domain_Layer.Entities.Identity
 {
     [CollectionName("User")]
     public class ApplicationUser : MongoIdentityUser<Guid>

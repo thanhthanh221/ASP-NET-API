@@ -1,6 +1,6 @@
-namespace BackEnd.Repositories
+namespace Infreastructure_Layer.Data.Repositories
 {
-    public static class UserRoles
+    public class IdentityRole
     {
         public const string Admin = "Admin";
         public const string Buyer = "Buyer";

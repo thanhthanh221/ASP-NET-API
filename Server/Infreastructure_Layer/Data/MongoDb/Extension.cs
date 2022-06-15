@@ -24,11 +24,9 @@ namespace Infreastructure_Layer.Data.MongoDb
                 
                 MongoDbSettings mongoDbSettings = Configuration?.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
                 MongoClient mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
-                // Tên của DataBase
-                ServiceSetting serviceSettings = Configuration?.GetSection(nameof(ServiceSetting)).Get<ServiceSetting>();
 
-                return mongoClient.GetDatabase(serviceSettings.ServiceName);
-                    
+                return mongoClient.GetDatabase(mongoDbSettings.Name);
+                
             });
             return Services;
         }
