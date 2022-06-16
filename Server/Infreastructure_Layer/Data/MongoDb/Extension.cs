@@ -16,19 +16,23 @@ namespace Infreastructure_Layer.Data.MongoDb
     {
         public static IServiceCollection AddMongoDb(this IServiceCollection Services)
         {
-            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String)); // Chỉnh Giud thành String
-            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String)); // Ngày tháng thành String
             Services.AddSingleton(ServiceProvider =>
             {
                 IConfiguration Configuration = ServiceProvider.GetService<IConfiguration>();
                 
-                MongoDbSettings mongoDbSettings = Configuration?.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+                MongoDbSettings mongoDbSettings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
                 MongoClient mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
 
                 return mongoClient.GetDatabase(mongoDbSettings.Name);
                 
             });
             return Services;
+        }
+        public static void ConverDataMongoDb()
+        {
+            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String)); // Chỉnh Giud thành String
+            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String)); // Ngày tháng thành String
+
         }
         public static IServiceCollection AddMongoRepostory<T>(this IServiceCollection Services, string CollectionName) where T : BaseEntity
         {

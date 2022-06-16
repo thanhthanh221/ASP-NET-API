@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
+using Domain_Layer.Entities.Identity;
 
 namespace BackEnd.Controllers 
 {
@@ -97,11 +98,11 @@ namespace BackEnd.Controllers
                 // IdentityResult => userManager.CreateAsync() => Tạo mới một người dùng 
             IdentityResult result = await userManager.CreateAsync(appUser, userDto.Password);
             // Nếu trong CSDl vẫn chưa có Role này
-            if(await roleManager.FindByNameAsync(UserRoles.Buyer) == null) 
+            if(await roleManager.FindByNameAsync("Buyer") == null) 
             {
-                IdentityResult resultRole = await roleManager.CreateAsync(new ApplicationRole() { Name = UserRoles.Buyer });
+                IdentityResult resultRole = await roleManager.CreateAsync(new ApplicationRole() { Name = "Buyer" });
             }
-            await userManager.AddToRoleAsync(appUser, (await roleManager.FindByNameAsync(UserRoles.Buyer)).Name);
+            await userManager.AddToRoleAsync(appUser, (await roleManager.FindByNameAsync("Buyer")).Name);
                   
 
             return Ok(new { Status = "Thành Công", Message = "Tạo Thành công một người bán!" });

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Domain_Layer.Entities.Product;
 using Infreastructure_Layer.Data.Repositories;
+using Domain_Layer.Entities.Identity;
 
 namespace BackEnd.Controllers
 {

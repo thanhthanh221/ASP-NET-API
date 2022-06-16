@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using BackEnd.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BackEnd.Repositories;
 using System.Threading.Tasks;
 using BackEnd.Dto;
 using Microsoft.AspNetCore.Http;
@@ -78,7 +76,7 @@ namespace BackEnd.Controllers
                 return NotFound();
             }
             UpLoadFileService.DeleteImage(category.imgCategory, "ImgCategory");
-            await categoryProduct.DeleteAsync(Id);
+            await categoryProduct.DeleteAsync(category);
             return NoContent();
         }
     }

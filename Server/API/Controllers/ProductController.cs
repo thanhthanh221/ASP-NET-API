@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using BackEnd.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BackEnd.Repositories;
 using System.Threading.Tasks;
 using BackEnd.Dto;
 using Microsoft.AspNetCore.Http;
@@ -22,18 +20,17 @@ namespace BackEnd.Controllers
     [Authorize]
     public class ProductController : ControllerBase
     {
-        private static IWebHostEnvironment _environment;
+
         private readonly MongoDbRepository<Product> productRepository;
         private readonly MongoDbRepository<ImgAndVideoProduct> imgProductRepository;
 
         private static int Page_Size {get; set;} = 5;
 
-        public ProductController(MongoDbRepository<Product> productRepository,
-            IWebHostEnvironment environment,
+        public ProductController(
+            MongoDbRepository<Product> productRepository,
             MongoDbRepository<ImgAndVideoProduct> imgProductRepository)
         {
             this.productRepository = productRepository;
-            _environment = environment;
             this.imgProductRepository = imgProductRepository;
             
         }
@@ -84,7 +81,7 @@ namespace BackEnd.Controllers
             Product product = await productRepository.GetAsync(Id);
             if(product == null)
             {
-                return NotFound(new 
+                   return NotFound(new 
                 {
                     message = "Không có sản phẩm"
                 });
@@ -145,7 +142,7 @@ namespace BackEnd.Controllers
             {
                 return NotFound();
             }
-            await productRepository.DeleteAsync(Id);
+            await productRepository.DeleteAsync(product);
 
             var imgcheck = from a in await imgProductRepository.GetAllAsync()
                             where a.ProductId == Id
@@ -154,7 +151,7 @@ namespace BackEnd.Controllers
             foreach (var item in imgcheck)
             {
                 UpLoadFileService.DeleteImage(item.Photo, "ImgProduct"); 
-                await imgProductRepository.DeleteAsync(Id);            
+                await imgProductRepository.DeleteAsync(item);            
             }
 
             return NoContent();            

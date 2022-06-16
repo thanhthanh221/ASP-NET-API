@@ -9,9 +9,9 @@ namespace Domain_Layer.Interfaces
     public interface IAsyncRepository<T> where T : BaseEntity
     {
         Task CreateAsync(T entity);
-        Task DeleteAsync(Guid Id);
+        Task DeleteAsync(T entity);
         Task<IReadOnlyCollection<T>> GetAllAsync();
-        Task<IReadOnlyCollection<T>> GetAllAsync(Expression<Func<T, bool>> filter);
+        Task<IReadOnlyCollection<T>> GetsAsync(Expression<Func<T, bool>> filter);
         Task<T> GetAsync(Guid Id);
         Task<T> GetAsync(Expression<Func<T,bool>> filter);
 

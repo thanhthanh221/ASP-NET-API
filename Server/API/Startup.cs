@@ -8,7 +8,6 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Linq;
 using System.Text.Json;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
 using BackEnd.Helpers;
@@ -21,12 +20,16 @@ using Infreastructure_Layer.Data.MongoDb;
 using Domain_Layer.Entities;
 using Domain_Layer.Entities.Product;
 using Infreastructure_Layer.Settings;
+using Infreastructure_Layer.Data.Identity;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization;
+
 namespace BackEnd
 {
     public class Startup
     {
         public static string ContentRootPath {get; set;}
-        String MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -38,18 +41,19 @@ namespace BackEnd
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            MongoDbSettings MongoDBsettings =  Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
-
+            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String)); // Chỉnh Giud thành String
+            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String)); // Ngày tháng thành String
             // Thêm Identity
+            services.AddIdentityMongoDb(Configuration);
 
             services.AddCors();
             // MongoDb
 
-            services.AddMongoDb().AddMongoRepostory<ImgAndVideoProduct>("ImgProduct");
-            services.AddMongoDb().AddMongoRepostory<Category>("Categories");
-            services.AddMongoDb().AddMongoRepostory<ProductReviews>("Products_Reviews");
-            services.AddMongoDb().AddMongoRepostory<Product>("Product");
+            services.AddMongoDb();
+            services.AddMongoRepostory<ImgAndVideoProduct>("ImgProduct");
+            services.AddMongoRepostory<Category>("Categories");
+            services.AddMongoRepostory<ProductReviews>("Products_Reviews");
+            services.AddMongoRepostory<Product>("Product");
 
             services.AddScoped<JwtService>();
 
@@ -102,15 +106,8 @@ namespace BackEnd
             });
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ASP_NET_API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ASP NET API", Version = "v1" });
             });
-            services.AddHealthChecks()
-                .AddMongoDb(
-                    MongoDBsettings.ConnectionString, 
-                    name: "mongodb",
-                    timeout: TimeSpan.FromSeconds(3),
-                    tags: new[] {"ready"}
-                );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -134,32 +131,10 @@ namespace BackEnd
             app.UseAuthentication();
 
             app.UseAuthorization();
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHealthChecks("/healthcheck/ready",new HealthCheckOptions{
-                    Predicate = (check) => check.Tags.Contains("ready"),
-                    ResponseWriter = async(context, report) =>
-                    {
-                        string result = JsonSerializer.Serialize(
-                            new{
-                                status = report.Status.ToString(),
-                                checks = report.Entries.Select(entry => new {
-                                    name = entry.Key,
-                                    status = entry.Value.Status.ToString(),
-                                    exception = entry.Value.Exception != null ? entry.Value.Exception.Message :"none",
-                                    duration = entry.Value.Duration.ToString()
-                                })
-                            }
-                        );
-                        context.Response.ContentType = MediaTypeNames.Application.Json;
-                        await context.Response.WriteAsync(result);
-                    }
-                });
-                endpoints.MapHealthChecks("/healthcheck/live",new HealthCheckOptions{
-                    Predicate = (_) => false
-                });
             });
         }
     }

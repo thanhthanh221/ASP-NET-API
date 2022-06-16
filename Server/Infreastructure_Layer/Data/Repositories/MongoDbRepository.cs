@@ -28,13 +28,9 @@ namespace Infreastructure_Layer.Data.Repositories
             await DbCollection.InsertOneAsync(entity);
         }
 
-        public async Task DeleteAsync(Guid Id)
+        public async Task DeleteAsync(T entity)
         {
-            if (Id == null)
-            {
-                throw new ArgumentException(nameof(Id));
-            }
-            FilterDefinition<T> filter = filterBuilder?.Eq(itemlist => itemlist.Id, Id);
+            FilterDefinition<T> filter = filterBuilder?.Eq(itemlist => itemlist.Id, entity.Id);
 
             await DbCollection.DeleteOneAsync(filter);
 
@@ -45,9 +41,9 @@ namespace Infreastructure_Layer.Data.Repositories
             return await DbCollection.Find(new BsonDocument()).ToListAsync();
         }
 
-        public async Task<IReadOnlyCollection<T>> GetAllAsync(Expression<Func<T, bool>> filter)
+        public async Task<IReadOnlyCollection<T>> GetsAsync(Expression<Func<T, bool>> filter)
         {
-            return await DbCollection.Find(new BsonDocument()).ToListAsync();
+            return await DbCollection.Find(filter).ToListAsync();
         }
 
         public async Task<T> GetAsync(Guid Id)
@@ -62,13 +58,8 @@ namespace Infreastructure_Layer.Data.Repositories
             // Tìm kiếm theo hàm delegate
             return await DbCollection.Find(filter).FirstAsync();
         }
-
         public async Task UpdateAsync(T entity)
         {
-            if (entity == null)
-            {
-                throw new ArgumentException(nameof(entity));
-            }
             FilterDefinition<T> filter = filterBuilder?.Eq(itemlist => itemlist.Id, entity.Id);
 
             await DbCollection.ReplaceOneAsync(filter, entity);
