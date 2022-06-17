@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
-using BackEnd.Helpers;
 using BackEnd.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,6 +23,9 @@ using Infreastructure_Layer.Data.Identity;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
+using Infreastructure_Layer.Data.Repositories;
+using Domain_Layer.Base;
+using Domain_Layer.Helpers;
 
 namespace BackEnd
 {
@@ -41,8 +43,6 @@ namespace BackEnd
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String)); // Chỉnh Giud thành String
-            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String)); // Ngày tháng thành String
             // Thêm Identity
             services.AddIdentityMongoDb(Configuration);
 

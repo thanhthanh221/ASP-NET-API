@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Domain_Layer.Entities.Product;
 using Infreastructure_Layer.Data.Repositories;
 using Domain_Layer.Entities.Identity;
+using Domain_Layer.Interfaces;
 
 namespace BackEnd.Controllers
 {
@@ -24,12 +25,12 @@ namespace BackEnd.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private static IWebHostEnvironment _environment;
-        private readonly MongoDbRepository<ProductReviews> productsReviews;
+        private readonly IAsyncRepository<ProductReviews> productsReviews;
 
         public ProductReviewController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            MongoDbRepository<ProductReviews> productsReviews,
+            IAsyncRepository<ProductReviews> productsReviews,
             IWebHostEnvironment environment)
         {
             this.userManager = userManager;

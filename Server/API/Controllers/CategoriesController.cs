@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
-using BackEnd.Services;
 using Domain_Layer.Entities;
-using Infreastructure_Layer.Data.Repositories;
+using Domain_Layer.Interfaces;
+using Domain_Layer.Services;
 
 namespace BackEnd.Controllers
 {
@@ -19,10 +19,10 @@ namespace BackEnd.Controllers
     public class CategoriesController : ControllerBase
     {
         private static IWebHostEnvironment _environment;
-        private readonly MongoDbRepository<Category> categoryProduct;
+        private readonly IAsyncRepository<Category> categoryProduct;
 
         public CategoriesController(
-            MongoDbRepository<Category> categoryProduct,
+            IAsyncRepository<Category> categoryProduct,
             IWebHostEnvironment environment)
         {
             _environment = environment;

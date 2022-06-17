@@ -9,8 +9,8 @@
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="5.0.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="Domain_Layer" Version="1.0.5" />
-    <PackageReference Include="Infreastructure_Layer" Version="1.0.6" />
+    <PackageReference Include="Domain_Layer" Version="1.0.6" />
+    <PackageReference Include="Infreastructure_Layer" Version="1.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />

@@ -8,10 +8,11 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
-using BackEnd.Services;
 using Microsoft.AspNetCore.Authorization;
 using Domain_Layer.Entities.Product;
 using Infreastructure_Layer.Data.Repositories;
+using Domain_Layer.Interfaces;
+using Domain_Layer.Services;
 
 namespace BackEnd.Controllers
 {
@@ -21,14 +22,14 @@ namespace BackEnd.Controllers
     public class ProductController : ControllerBase
     {
 
-        private readonly MongoDbRepository<Product> productRepository;
-        private readonly MongoDbRepository<ImgAndVideoProduct> imgProductRepository;
+        private readonly IAsyncRepository<Product> productRepository;
+        private readonly IAsyncRepository<ImgAndVideoProduct> imgProductRepository;
 
         private static int Page_Size {get; set;} = 5;
 
         public ProductController(
-            MongoDbRepository<Product> productRepository,
-            MongoDbRepository<ImgAndVideoProduct> imgProductRepository)
+            IAsyncRepository<Product> productRepository,
+            IAsyncRepository<ImgAndVideoProduct> imgProductRepository)
         {
             this.productRepository = productRepository;
             this.imgProductRepository = imgProductRepository;
