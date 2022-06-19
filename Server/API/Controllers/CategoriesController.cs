@@ -66,10 +66,6 @@ namespace BackEnd.Controllers
         [HttpDelete]
         public async Task<ActionResult> DeleteCategory(Guid Id)
         {
-            if(Id == null)
-            {
-                return NotFound();
-            }
             Category category = (await categoryProduct.GetAsync(Id));
             if(category == null)
             {

@@ -12,12 +12,12 @@ namespace Domain_Layer.Services
             {
                 try
                 {
-                    if(!Directory.Exists(Environment.CurrentDirectory + "Images" + $"\\{locationStorage}\\"))
+                    if(!Directory.Exists(Environment.CurrentDirectory + "\\Images\\" + $"\\{locationStorage}\\"))
                     // Kiểm tra xem đã tồn tại thư mục chưa
                     {
-                        Directory.CreateDirectory(Environment.CurrentDirectory + "Images" + $"\\{locationStorage}\\");
+                        Directory.CreateDirectory(Environment.CurrentDirectory + "\\Images\\" + $"\\{locationStorage}\\");
                     }
-                    using (FileStream fileStream = System.IO.File.Create(Environment.CurrentDirectory + "Images" +  $"\\{locationStorage}\\" + file.FileName))
+                    using (FileStream fileStream = System.IO.File.Create(Environment.CurrentDirectory + "\\Images\\" +  $"\\{locationStorage}\\" + file.FileName))
                     {
                         await file.CopyToAsync(fileStream);
                         await fileStream.FlushAsync(); // giải phóng bộ đệm
@@ -37,7 +37,7 @@ namespace Domain_Layer.Services
         }
         public static void DeleteImage(String imageName, String locationStorage)
         {
-            var imagePath = Path.Combine(Environment.CurrentDirectory + "Images" + $"\\{locationStorage}\\" + imageName);
+            var imagePath = Path.Combine(Environment.CurrentDirectory + "\\Images\\" + $"\\{locationStorage}\\" + imageName);
             if(System.IO.File.Exists(imagePath))
             {
                 System.IO.File.Delete(imagePath);

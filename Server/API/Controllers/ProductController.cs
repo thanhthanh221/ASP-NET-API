@@ -10,7 +10,6 @@ using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Domain_Layer.Entities.Product;
-using Infreastructure_Layer.Data.Repositories;
 using Domain_Layer.Interfaces;
 using Domain_Layer.Services;
 
@@ -18,10 +17,8 @@ namespace BackEnd.Controllers
 {
     [Route("Product")]
     [ApiController]
-    [Authorize]
     public class ProductController : ControllerBase
     {
-
         private readonly IAsyncRepository<Product> productRepository;
         private readonly IAsyncRepository<ImgAndVideoProduct> imgProductRepository;
 
@@ -103,7 +100,6 @@ namespace BackEnd.Controllers
             }
             return productDto;
         }
-        [Authorize]
         [HttpPost]
         public async Task<ActionResult> CreateProductAsync([FromForm] CreateProductDto productDto)
         {
@@ -130,8 +126,7 @@ namespace BackEnd.Controllers
                     await imgProductRepository.CreateAsync(imgProduct);
                                 
                 }
-            }
-            
+            }       
             return CreatedAtAction(nameof(CreateProductAsync), new {Id = product.Id}, product); 
         }
         [Authorize]

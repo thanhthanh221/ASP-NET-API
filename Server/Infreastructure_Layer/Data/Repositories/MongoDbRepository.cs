@@ -34,8 +34,7 @@ namespace Infreastructure_Layer.Data.Repositories
 
             await DbCollection.DeleteOneAsync(filter);
 
-        }
-
+        } 
         public async Task<IReadOnlyCollection<T>> GetAllAsync()
         {
             return await DbCollection.Find(new BsonDocument()).ToListAsync();

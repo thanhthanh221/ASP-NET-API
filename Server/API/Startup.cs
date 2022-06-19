@@ -6,11 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Linq;
-using System.Text.Json;
-using System.Net.Mime;
-using Microsoft.AspNetCore.Http;
-using BackEnd.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -20,12 +15,8 @@ using Domain_Layer.Entities;
 using Domain_Layer.Entities.Product;
 using Infreastructure_Layer.Settings;
 using Infreastructure_Layer.Data.Identity;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Bson.Serialization;
-using Infreastructure_Layer.Data.Repositories;
-using Domain_Layer.Base;
 using Domain_Layer.Helpers;
+using Domain_Layer.Services;
 
 namespace BackEnd
 {
@@ -54,36 +45,16 @@ namespace BackEnd
             services.AddMongoRepostory<Category>("Categories");
             services.AddMongoRepostory<ProductReviews>("Products_Reviews");
             services.AddMongoRepostory<Product>("Product");
+            services.AddMongoRepostory<ImgProductReview>("ImgAndVideoReviewsProduct");
 
             services.AddScoped<JwtService>();
 
             services.AddControllers(option =>{
                 option.SuppressAsyncSuffixInActionNames = false; //Phương thức xóa bỏ hậu tố bất đồng bộ (Async)
             });
-            services.Configure<IdentityOptions> (options => {
-                // Thiết lập về Password
-                options.Password.RequireDigit = false; // Không bắt phải có số
-                options.Password.RequireLowercase = false; // Không bắt phải có chữ thường
-                options.Password.RequireNonAlphanumeric = false; // Không bắt ký tự đặc biệt
-                options.Password.RequireUppercase = false; // Không bắt buộc chữ in
-                options.Password.RequiredLength = 3; // Số ký tự tối thiểu của password
-                options.Password.RequiredUniqueChars = 1; // Số ký tự riêng biệt
-
-                // Cấu hình Lockout - khóa user
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes (5); // Khóa 5 phút
-                options.Lockout.MaxFailedAccessAttempts = 5; // Thất bại 5 lầ thì khóa
-                options.Lockout.AllowedForNewUsers = true;
-
-                // Cấu hình về User.
-                options.User.AllowedUserNameCharacters = // các ký tự đặt tên user
-                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                options.User.RequireUniqueEmail = true;  // Email là duy nhất
-
-                // Cấu hình đăng nhập.
-                options.SignIn.RequireConfirmedEmail = false;            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
-                options.SignIn.RequireConfirmedPhoneNumber = false;     // Xác thực số điện thoại
-
-            });
+            //Cài đặt OptionIdentity
+            services.IdentityServices();
+            
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

@@ -2,21 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>ASP_NET_API__Angular_2</RootNamespace>
+    <RootNamespace>ASP_NET_API_ReactJs</RootNamespace>
     <UserSecretsId>09e40393-b39c-4242-8f42-542ad297fc65</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="5.0.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="Domain_Layer" Version="1.0.6" />
-    <PackageReference Include="Infreastructure_Layer" Version="1.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.17.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain_Layer\Domain_Layer.csproj" />
+    <ProjectReference Include="..\Infreastructure_Layer\Infreastructure_Layer.csproj" />
   </ItemGroup>
 
 </Project>
