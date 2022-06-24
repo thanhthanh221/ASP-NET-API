@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Domain_Layer.Entities.Product;
 using Domain_Layer.Entities.Identity;
 using Domain_Layer.Interfaces;
+using Domain_Layer.Services;
 
 namespace BackEnd.Controllers
 {
@@ -35,7 +36,7 @@ namespace BackEnd.Controllers
             this.productsReviews = productsReviews;
             this.imgProductReview = imgProductReview;
         }
-        [HttpGet]
+        [HttpGet("ProductId")]
         public async Task<IActionResult> GetCommentsProduct(Guid ProductId, int page)
         {
             IReadOnlyCollection<ProductReviews> CommentRespones =  await productsReviews.GetsAsync((ProductReviews p) => p.ProductId.Equals(ProductId));
@@ -62,25 +63,111 @@ namespace BackEnd.Controllers
                 page = page
             });
         }
-
         [HttpGet("Id")]
-        public async Task<IActionResult> GetCommentAsync(Guid ProductId)
+        public async Task<IActionResult> GetCommentProduct(Guid Id)
         {
-            ProductReviews commentInProduct = await productsReviews.GetAsync(ProductId);
-            return Ok();
+            ProductReviews prv = await productsReviews.GetAsync(Id);
+            if(prv == null)
+            {
+                return NotFound ( new {
+                        message = "Không tìm thấy bình luận trên"
+                    }
+                );
+            }
+            ApplicationUser user = (await userManager.FindByIdAsync(prv.userId.ToString()));
+
+            IReadOnlyCollection<ImgProductReview> iPRs = await imgProductReview.
+                                                GetsAsync((ImgProductReview i) => i.CommentId.Equals(prv.Id));
+            return Ok( new {
+                    userName = (user == null) ? null : user.UserName,
+                    Comment = prv.Comment,
+                    numberStart = prv.numberOfStars,
+                    DateCreate = prv.dateTimeCreate,
+                    file = (iPRs == null) ? null : iPRs.Select(h => h.Photo)
+                }
+            );
         }
         [HttpPost]
-        public async Task<IActionResult> PostCommentAsync([FromForm]CreateProductReviewDto createProductReviewDto)
+        public async Task<IActionResult> PostCommentAsync( [FromForm] PostPutProductReviewDto postPutProductReviewDto)
         {
-            ProductReviews productsReviewsNew = new () {
+            ProductReviews prv = new () {
                 Id = Guid.NewGuid(),
-                ProductId = createProductReviewDto.ProductId,   
-                numberOfStars = createProductReviewDto.numberOfStars,
-                Comment = createProductReviewDto.comment,
+                ProductId = postPutProductReviewDto.ProductId,
+                userId = postPutProductReviewDto.userId,   
+                numberOfStars = postPutProductReviewDto.numberOfStars,
+                Comment = postPutProductReviewDto.comment,
                 dateTimeCreate = DateTimeOffset.Now
             };
-            await productsReviews.CreateAsync(productsReviewsNew);
-            return Ok();
+            await productsReviews.CreateAsync(prv);
+
+            if(postPutProductReviewDto.files.Length != 0)
+            {
+                foreach (var file in postPutProductReviewDto.files)
+                {
+                    ImgProductReview imgPrv = new()
+                    {
+                        Id = Guid.NewGuid(),
+                        Photo = await UpLoadFileService.SaveImage(file, "ImgProductReview"),
+                        CommentId = prv.Id,
+                        
+                    };
+                    await imgProductReview.CreateAsync(imgPrv);                         
+                }
+            }       
+            return CreatedAtAction(nameof(PostCommentAsync), new {Id = prv.Id}, prv);
         }
+        [HttpPut("Id")]
+        public async Task<IActionResult> PutCommentAsync (Guid CommentId,[FromForm] PostPutProductReviewDto postPutProductReviewDto)
+        {
+            ProductReviews comment = await productsReviews.GetAsync(CommentId);
+            if(comment is null)
+            {
+                return NotFound();
+            }
+            ProductReviews prv = new ProductReviews()
+            {
+                Id = CommentId,
+                ProductId = comment.ProductId,
+                Comment = postPutProductReviewDto.comment,
+                numberOfStars = postPutProductReviewDto.numberOfStars,
+                dateTimeCreate = comment.dateTimeCreate
+            };
+            IReadOnlyCollection<ImgProductReview> imgAndVideoRv = await imgProductReview.
+                                GetsAsync((ImgProductReview i) => i.CommentId.Equals(CommentId));
+            if(imgAndVideoRv.Count() != 0)
+            {
+                foreach (ImgProductReview item in imgAndVideoRv)
+                {
+                    await imgProductReview.DeleteAsync(item);
+                    UpLoadFileService.DeleteImage(item.Photo, "ImgProductReview");                
+                };
+            };
+            await productsReviews.UpdateAsync(prv);
+            return NoContent();
+        }
+        [HttpDelete("Id")]
+        public async Task<IActionResult> DeleteCommentAsync(Guid CommentId)
+        {
+            ProductReviews prv = await productsReviews.GetAsync(CommentId);
+
+            if(prv is null)
+            {
+                return NotFound();
+            }
+            IReadOnlyCollection<ImgProductReview> imgAndVideoRv = await imgProductReview.
+                                GetsAsync((ImgProductReview i) => i.CommentId.Equals(CommentId));
+
+            if(imgAndVideoRv.Count() != 0)
+            {
+                foreach (ImgProductReview item in imgAndVideoRv)
+                {
+                    await imgProductReview.DeleteAsync(item);
+                    UpLoadFileService.DeleteImage(item.Photo, "ImgProductReview");                
+                };
+            };
+
+            return NoContent();
+        }
+
     }
 }

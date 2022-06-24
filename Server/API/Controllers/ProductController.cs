@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Domain_Layer.Entities.Product;
 using Domain_Layer.Interfaces;
 using Domain_Layer.Services;
+using API.Extension;
 
 namespace BackEnd.Controllers
 {
@@ -35,43 +36,20 @@ namespace BackEnd.Controllers
         [HttpGet]
         public async Task<ActionResult> GetProductsAsync(int page)
         {
-            // Trả về sản phẩm
-            IEnumerable<GetProductDto> productsDto = (await productRepository.GetAllAsync()).ToList().Select(p => p.AsDtoGetProduct());
-
-            var imgcheck = from a in await imgProductRepository.GetAllAsync()
-                            orderby a.Id
-                            group a by a.ProductId;
-
-            List<IGrouping<Guid, ImgAndVideoProduct>> hash = new List<IGrouping<Guid, ImgAndVideoProduct>>();
+            var imgcheck = ProductLinq.GroupImgProductDto(await imgProductRepository.GetAllAsync());
+            var productFull = (await productRepository.GetAllAsync()); 
 
             // Tổng bộ tất cả các sản phẩm trả vể
-            var productAndImg = (from product in await productRepository.GetAllAsync()
-                                join img in imgcheck on product.Id equals img.Key into t
-                                from img in t.DefaultIfEmpty()
-                                orderby product.Name                      
-                                select new GetProductDto {
-                                    Name = product.Name,
-                                    Price = product.Price,
-                                    Describe = product.Describe,
-                                    numberOfStars = product.numberOfStars,
-                                    files = (img == null) ? null : img.Select(p => p.Photo)
-                                })
+            var productAndImg = ProductLinq.ProductAndImgDto(imgcheck, productFull)
                                 .Skip((page - 1)* Page_Size).Take(Page_Size);
-
-            var productAndImgPage = new {
-                page = page,
-                data =  productAndImg
-            };
                                 
-            if(productAndImg.Count() == 0)
-            {
-                return NotFound(new 
-                    {
-                    message = "Không có sản phẩm nào"
-                });
-            }
-            
-            return Ok(productAndImgPage);
+            return Ok(
+                new 
+                {
+                    page = page,
+                    data =  (productAndImg.Count() != 0) ? productAndImg : null
+                }
+            );
         }
         [HttpGet("Id")]
         public async Task<ActionResult<GetProductDto>> GetProductAsync(Guid Id)
@@ -84,49 +62,26 @@ namespace BackEnd.Controllers
                     message = "Không có sản phẩm"
                 });
             }
-            GetProductDto productDto = product.AsDtoGetProduct();
+            GetProductDto productDto = product.ToProductDto();
 
             productDto.files =  from a in await imgProductRepository.GetAllAsync()
                                 where a.ProductId == Id
-                                select a.Photo ; 
-            if(productDto.files.Count() == 0)
-            {
-                productDto.files = null;
-            }
-                                       
-            if(productDto is null)
-            {
-                return NotFound();
-            }
-            return productDto;
+                                select (a.Photo == null) ? null : a.Photo; 
+        
+            return (productDto is null) ? NotFound() : Ok(productDto);
         }
         [HttpPost]
-        public async Task<ActionResult> CreateProductAsync([FromForm] CreateProductDto productDto)
+        public async Task<ActionResult> CreateProductAsync([FromForm] CreateUpdateProductDto productDto)
         {
-            Product product = new Product() 
-            {
-                Name = productDto.Name,
-                Price = productDto.Price,
-                Describe = productDto.Describe,
-                DateTimeCreate = DateTimeOffset.UtcNow,
-                Id = Guid.NewGuid()
-            };
+            Product product = productDto.ToProductEntity();
+            await productRepository.CreateAsync(product);
 
             // Xử lý ảnh
-            if(productDto.files.Length != 0)
+            foreach (var file in productDto.files)
             {
-                foreach (var file in productDto.files)
-                {
-                    ImgAndVideoProduct imgProduct = new()
-                    {
-                        Id = Guid.NewGuid(),
-                        Photo = await UpLoadFileService.SaveImage(file, "ImgProduct"),
-                        ProductId = product.Id
-                    };
-                    await imgProductRepository.CreateAsync(imgProduct);
-                                
-                }
-            }       
+                ImgAndVideoProduct imgProduct = await ProductMapper.ToImgAndVideoProduct(file, product);
+                await imgProductRepository.CreateAsync(imgProduct);                 
+            }
             return CreatedAtAction(nameof(CreateProductAsync), new {Id = product.Id}, product); 
         }
         [Authorize]
@@ -143,31 +98,27 @@ namespace BackEnd.Controllers
             var imgcheck = from a in await imgProductRepository.GetAllAsync()
                             where a.ProductId == Id
                             select a;
-
-            foreach (var item in imgcheck)
+            
+            if(imgcheck.Count() != 0)
             {
-                UpLoadFileService.DeleteImage(item.Photo, "ImgProduct"); 
-                await imgProductRepository.DeleteAsync(item);            
+                foreach (var item in imgcheck)
+                {
+                    UpLoadFileService.DeleteImage(item.Photo, "ImgProduct"); 
+                    await imgProductRepository.DeleteAsync(item);            
+                }
             }
-
             return NoContent();            
         }
         [HttpPut("{Id}")]
         [Authorize]
-        public async Task<ActionResult> UpdateItem(Guid Id,[FromForm] UpdateProductDto productDto)
+        public async Task<ActionResult> UpdateItem(Guid Id , [FromForm] CreateUpdateProductDto productDto)
         {
             Product product = await productRepository.GetAsync(Id);
             if(product is null)
             {
                 return NotFound();
             }
-            Product productUpdate = new(){
-                Id = product.Id,
-                Name = productDto.Name,         
-                Price = productDto.Price,
-                Describe = productDto.Describe,
-                DateTimeCreate = product.DateTimeCreate
-            };
+            Product productUpdate = productDto.ToProductEntity();
             await productRepository.UpdateAsync(productUpdate);
 
             return NoContent();

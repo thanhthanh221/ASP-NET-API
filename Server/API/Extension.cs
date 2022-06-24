@@ -10,17 +10,6 @@ using Domain_Layer.Entities.Product;
 namespace BackEnd {
     // Các trường hợp xử lý biến đổi
     public static class Extensions{
-        public static GetProductDto AsDtoGetProduct(this Product product)
-        {
-            return new GetProductDto 
-            {
-                Name = product.Name,
-                Price = product.Price,
-                Describe = product.Describe,
-                numberOfStars = product.numberOfStars,
-                files =  null
-            };
-        }
         public static GetCategoryDto AsGetCategory(this Category category)
         {
             return new GetCategoryDto

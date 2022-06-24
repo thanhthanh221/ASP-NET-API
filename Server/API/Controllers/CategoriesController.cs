@@ -18,14 +18,10 @@ namespace BackEnd.Controllers
     [Route("Categories")]
     public class CategoriesController : ControllerBase
     {
-        private static IWebHostEnvironment _environment;
         private readonly IAsyncRepository<Category> categoryProduct;
 
-        public CategoriesController(
-            IAsyncRepository<Category> categoryProduct,
-            IWebHostEnvironment environment)
+        public CategoriesController(IAsyncRepository<Category> categoryProduct)
         {
-            _environment = environment;
             this.categoryProduct  = categoryProduct;
             
         }
