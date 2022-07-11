@@ -8,8 +8,10 @@ import { remove } from '../redux/product-modal/productModalSlice'
 
 import Button from './Button'
 import numberWithCommas from '../utils/numberWithCommas'
+import { useNavigate } from 'react-router-dom'
 
 const ProductView = (props) => {
+    const navigate = useNavigate();
 
     const dispatch = useDispatch() // được lấy từ trong redux ra
 
@@ -53,7 +55,8 @@ const ProductView = (props) => {
         setColor(undefined)
         setSize(undefined)
     }, [product])
-
+    
+    // Nếu chưa chọn
     const check = () => {
         if (color === undefined) {
             alert('Vui lòng chọn màu sắc!')  // Hiện ra 1 cửa sổ cảnh báo
@@ -97,7 +100,7 @@ const ProductView = (props) => {
             }
             if (dispatch(addItem(newItem))) {
                 dispatch(remove())
-                props.history.push('/cart')
+                navigate('/cart')
             } else {
                 alert('Fail')
             }

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const PolicyCard = props => {
+const PolicyCard = (props) => {
     return (
         <div className="policy-card">
             <div className="policy-card__icon">

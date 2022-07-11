@@ -12,6 +12,8 @@ using System.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Domain_Layer.Entities.Identity;
 using Domain_Layer.Helpers;
+using Infreastructure_Layer.Data.Repositories;
+using Infreastructure_Layer.Data;
 
 namespace BackEnd.Controllers 
 {
@@ -20,22 +22,22 @@ namespace BackEnd.Controllers
     [Route("Auth")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> userManager;
-        private readonly RoleManager<ApplicationRole> roleManager;
-        private readonly JwtService jwtService;
-        private readonly SignInManager<ApplicationUser> signInManager;
-        public IConfiguration Configuration { get; }
+        private  readonly UserManager<ApplicationUser> userManager;
+        private  readonly RoleManager<ApplicationRole> roleManager;
+        private  readonly JwtService jwtService;
+        private  readonly SignInManager<ApplicationUser> signInManager;
 
-        public AuthController( JwtService jwtService,
-                                UserManager<ApplicationUser> userManager ,
-                                SignInManager<ApplicationUser> signInManager ,
-                                RoleManager<ApplicationRole> roleManager )
+        public AuthController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, JwtService jwtService, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
         {
-            this.jwtService = jwtService;
             this.userManager = userManager;
-            this.signInManager = signInManager;
             this.roleManager = roleManager;
+            this.jwtService = jwtService;
+            this.signInManager = signInManager;
+            Configuration = configuration;
         }
+
+        public IConfiguration Configuration { get; }
+        
         [HttpPost("Login")]
         // Đăng nhập bằng email
         public async Task<ActionResult> LoginAsync([FromForm] LoginUserDto LoginDto)
@@ -75,7 +77,7 @@ namespace BackEnd.Controllers
                 }
             });
         }
-        [HttpPost("RegisterBuyer")]
+        [HttpPost("RegisterSeller")]
         public async Task<IActionResult> RegisterSeller([FromForm] CreateUserDto userDto)
         {
             ApplicationUser useCheckEmailExists = await userManager.FindByEmailAsync(userDto.Email);
@@ -100,9 +102,9 @@ namespace BackEnd.Controllers
             // Nếu trong CSDl vẫn chưa có Role này
             if(await roleManager.FindByNameAsync("Buyer") == null) 
             {
-                IdentityResult resultRole = await roleManager.CreateAsync(new ApplicationRole() { Name = "Buyer" });
+                IdentityResult resultRole = await roleManager.CreateAsync(new ApplicationRole() { Name = IdentityRoleUser.Seller });
             }
-            await userManager.AddToRoleAsync(appUser, (await roleManager.FindByNameAsync("Buyer")).Name);
+            await userManager.AddToRoleAsync(appUser, (await roleManager.FindByNameAsync(IdentityRoleUser.Seller)).Name);
                   
 
             return Ok(new { Status = "Thành Công", Message = "Tạo Thành công một người bán!" });

@@ -17,6 +17,7 @@ using Infreastructure_Layer.Settings;
 using Infreastructure_Layer.Data.Identity;
 using Domain_Layer.Helpers;
 using Domain_Layer.Services;
+using Domain_Layer.Entities.Order;
 
 namespace BackEnd
 {
@@ -46,6 +47,8 @@ namespace BackEnd
             services.AddMongoRepostory<ProductReviews>("Products_Reviews");
             services.AddMongoRepostory<Product>("Product");
             services.AddMongoRepostory<ImgProductReview>("ImgAndVideoReviewsProduct");
+            
+            services.AddMongoRepostory<Order>("Order");
 
             services.AddScoped<JwtService>();
 

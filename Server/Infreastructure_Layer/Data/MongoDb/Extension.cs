@@ -8,6 +8,7 @@ using Infreastructure_Layer.Settings;
 using Domain_Layer.Interfaces;
 using Domain_Layer.Base;
 using Infreastructure_Layer.Data.Repositories;
+using System;
 
 namespace Infreastructure_Layer.Data.MongoDb
 {
@@ -18,7 +19,7 @@ namespace Infreastructure_Layer.Data.MongoDb
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String)); // Chỉnh Giud thành String
             BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String)); // Ngày tháng thành String
-
+            
             Services.AddSingleton(ServiceProvider =>
             {   
                 IConfiguration Configuration = ServiceProvider.GetService<IConfiguration>();

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import Grid from './Grid'
 import ProductCard from './ProductCard'
 
-const InfinityList = props => {
+const InfinityList = (props) => {
 
     const perLoad = 6 // items each load
 
@@ -15,7 +15,8 @@ const InfinityList = props => {
     const [load, setLoad] = useState(true)
 
     const [index, setIndex] = useState(0)
-
+    
+    
     useEffect(() => {
         setData(props.data.slice(0, perLoad))
         setIndex(1)
@@ -23,9 +24,9 @@ const InfinityList = props => {
 
     useEffect(() => {
         window.addEventListener("scroll", () => {
-            if (listRef && listRef.current) {
+            if (listRef && listRef.current) { 
                 if (window.scrollY + window.innerHeight >= listRef.current.clientHeight + listRef.current.offsetTop + 200) {
-                    console.log("bottom reach")
+                    console.log("bottom reach");
                     setLoad(true)
                 }
             }
@@ -36,6 +37,7 @@ const InfinityList = props => {
     useEffect(() => {
         const getItems = () => {
             const pages = Math.floor(props.data.length / perLoad)
+            // thừa dữ liệu thì nhét vào trang sau
             const maxIndex = props.data.length % perLoad === 0 ? pages : pages + 1
 
             if (load && index <= maxIndex) {

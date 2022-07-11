@@ -6,9 +6,13 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace BackEnd.Dto
 {
-    public record CreateUpdateProductDto([Required] string Name, [Required] string Describe,
-                                    [Required] decimal Price, [Required] IFormFile[] files, Guid UserId
-                                    );
+    public record CreateUpdateProductDto(
+        [Required] Guid UserId,
+        [Required] string Name,
+        [Required] string Describe,
+        [Required] int numberStart, 
+        [Required] decimal Price, 
+        [Required] IFormFile[] files);
     public record GetProductDto
     {
         public Guid UserSellId {get; set;}

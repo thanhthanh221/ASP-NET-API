@@ -5,8 +5,13 @@ using Microsoft.AspNetCore.Http;
 
 namespace BackEnd.Dto
 {
-    public record CreateCategoryDto([Required] String name, IEnumerable<Guid> parentsCategoryId,
-        IEnumerable<Guid> subCategoryId, [Required] IFormFile imgCategory, List<Guid> products);
+    public record CreateCategoryDto(
+        [Required] String name, 
+        IEnumerable<Guid> parentsCategoryId,
+        IEnumerable<Guid> subCategoryId, 
+        [Required] IFormFile imgCategory, 
+        List<Guid> products
+    );
     public record GetCategoryDto
     {
         [Required]

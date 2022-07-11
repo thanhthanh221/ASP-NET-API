@@ -15,9 +15,8 @@ const RoutesProject = () => {
                 <Route path='/' element = {<Layout />}>
                     <Route path='' element= {<Home />}/>
                     <Route path='catalog/:slug' element= {<Product />}/>
-                    <Route path='catalog' element= {<Catalog/>}/>
+                    <Route path='catalog' element= {<Catalog />}/>
                     <Route path='cart' element={<Cart />}/>
-
                     <Route path='*' element = {<Home />} />
                 </Route>
             </Routes>

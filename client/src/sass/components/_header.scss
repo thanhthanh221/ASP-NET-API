@@ -38,13 +38,13 @@
         pointer-events: none;
 
         img {
-            height: 28px;
+            height: 70px;
         }
     }
 
     &__menu {
         @include flex(center, space-between);
-        height: 100%;
+        height: 90%;
         font-size: 1.5rem;
 
         &__item ~ &__item {

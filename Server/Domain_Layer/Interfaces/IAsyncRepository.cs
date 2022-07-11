@@ -6,7 +6,8 @@ using Domain_Layer.Base;
 
 namespace Domain_Layer.Interfaces
 {
-    public interface IAsyncRepository<T> where T : BaseEntity
+    // IAggregateRoot
+    public interface IAsyncRepository<T> where T : BaseEntity 
     {
         Task CreateAsync(T entity);
         Task DeleteAsync(T entity);
@@ -14,7 +15,6 @@ namespace Domain_Layer.Interfaces
         Task<IReadOnlyCollection<T>> GetsAsync(Expression<Func<T, bool>> filter);
         Task<T> GetAsync(Guid Id);
         Task<T> GetAsync(Expression<Func<T,bool>> filter);
-
         Task UpdateAsync(T entity);
     }
 }

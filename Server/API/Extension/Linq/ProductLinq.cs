@@ -35,6 +35,15 @@ namespace API.Extension
             return null;
 
         }
+        public static IEnumerable<ImgAndVideoProduct> FindImgProduct(
+            IEnumerable<ImgAndVideoProduct> FullFileProduct, Guid ProductId)
+        {
+            IEnumerable<ImgAndVideoProduct> FindFile = from a in FullFileProduct
+                            where a.ProductId == ProductId
+                            select (a != null) ? a : null;
+
+            return FindFile;
+        }
         
     }
 }

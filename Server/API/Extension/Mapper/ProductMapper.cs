@@ -18,6 +18,7 @@ namespace API.Extension
                 Describe = productDto.Describe,
                 DateTimeCreate = DateTimeOffset.UtcNow,
                 UserSellId = productDto.UserId,
+                numberOfStars = productDto.numberStart,
                 Id = Guid.NewGuid()
             };
         }

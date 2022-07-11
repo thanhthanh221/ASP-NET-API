@@ -237,8 +237,10 @@ const products = [
     // 18 products
 ]
 
-const getAllProducts = () => products
-
+const getAllProducts = () => {
+    return products;
+}
+// Lấy ngẫu nhiên 1 số dữ liệu từ trong backend gửi lên
 const getProducts = (count) => {
     const max = products.length - count
     const min = 0

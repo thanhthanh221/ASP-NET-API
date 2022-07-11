@@ -64,9 +64,7 @@ namespace BackEnd.Controllers
             }
             GetProductDto productDto = product.ToProductDto();
 
-            productDto.files =  from a in await imgProductRepository.GetAllAsync()
-                                where a.ProductId == Id
-                                select (a.Photo == null) ? null : a.Photo; 
+            productDto.files = ProductLinq.FindImgProduct(await imgProductRepository.GetAllAsync(), Id).Select(p => p.Photo); 
         
             return (productDto is null) ? NotFound() : Ok(productDto);
         }
@@ -95,9 +93,7 @@ namespace BackEnd.Controllers
             }
             await productRepository.DeleteAsync(product);
 
-            var imgcheck = from a in await imgProductRepository.GetAllAsync()
-                            where a.ProductId == Id
-                            select a;
+            var imgcheck = ProductLinq.FindImgProduct(await imgProductRepository.GetAllAsync(), Id);
             
             if(imgcheck.Count() != 0)
             {
