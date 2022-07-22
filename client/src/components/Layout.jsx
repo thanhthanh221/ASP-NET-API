@@ -14,7 +14,7 @@ const Layout = () => {
                 <div className='main'>
                     <Outlet />
                 </div>
-            </div>
+            </div>  
             <Footer />
             <ProductViewModal />
         </div>

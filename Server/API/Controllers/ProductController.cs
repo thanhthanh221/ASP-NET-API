@@ -23,7 +23,7 @@ namespace BackEnd.Controllers
         private readonly IAsyncRepository<Product> productRepository;
         private readonly IAsyncRepository<ImgAndVideoProduct> imgProductRepository;
 
-        private static int Page_Size {get; set;} = 5;
+        private static int Page_Size {get; set;} = 6;
 
         public ProductController(
             IAsyncRepository<Product> productRepository,

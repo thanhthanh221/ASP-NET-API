@@ -11,8 +11,6 @@ namespace Domain_Layer.Entities
         public String name {get; set;} 
         [Required]
         public String imgCategory {get; set;}
-        // Danh sách mã sản phẩm
-        public IEnumerable<Guid> products {get; set;}
         public IEnumerable<Guid> parentsCategoryId {get; set;} // danh mục cha
         public IEnumerable<Guid> subCategoryId {get; set;}     // Danh mục con
     }

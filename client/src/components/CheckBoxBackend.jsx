@@ -1,13 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const CheckBox = (props) => {
+const CheckBoxBackend = (props) => {
 
     const inputRef = React.useRef(null)
 
     const onChange = () => {
         if (props.onChange) {
-            props.onChange(inputRef.current)
+            props.onChange(inputRef.current);
         }
     }
 
@@ -17,14 +17,14 @@ const CheckBox = (props) => {
             <span className="custom-checkbox__checkmark">
                 <i className="bx bx-check"></i>
             </span>
-            {props.label}
+            {props.name}
         </label>
     )
 }
 
-CheckBox.propTypes = {
+CheckBoxBackend.propTypes = {
     label: PropTypes.string.isRequired,
     checked: PropTypes.bool
 }
 
-export default CheckBox
+export default CheckBoxBackend

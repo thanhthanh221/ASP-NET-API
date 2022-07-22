@@ -22,7 +22,7 @@ const Product = (props) => {
     }, [product])
 
     return (
-        <Helmet title={product.title}>
+        <Helmet title={"Trang Sản Phẩm"}>
             <Section>
                 <SectionBody>
                     <ProductView product={product}/>

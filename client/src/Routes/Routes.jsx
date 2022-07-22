@@ -7,6 +7,7 @@ import Catalog from '../pages/Catalog'
 import Cart from '../pages/Cart'
 import Product from '../pages/Product'
 import Layout from '../components/Layout'
+import CatalogBackend from '../pages/CatalogBackend'
 
 const RoutesProject = () => {
     return (
@@ -16,7 +17,10 @@ const RoutesProject = () => {
                     <Route path='' element= {<Home />}/>
                     <Route path='catalog/:slug' element= {<Product />}/>
                     <Route path='catalog' element= {<Catalog />}/>
+                    <Route path= 'catalog/?slug' element= {<Product/>} />
                     <Route path='cart' element={<Cart />}/>
+                    <Route path='danhMucSanPham' element= {<CatalogBackend/>}/>
+                    <Route path = 'danhMucSanPham/:id' element = {<Product />} />
                     <Route path='*' element = {<Home />} />
                 </Route>
             </Routes>

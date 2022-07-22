@@ -13,13 +13,13 @@ namespace API.Extension
         public static Product ToProductEntity(this CreateUpdateProductDto productDto)
         {
             return new Product {
+                Id = Guid.NewGuid(),
                 Name = productDto.Name,
                 Price = productDto.Price,
                 Describe = productDto.Describe,
                 DateTimeCreate = DateTimeOffset.UtcNow,
                 UserSellId = productDto.UserId,
-                numberOfStars = productDto.numberStart,
-                Id = Guid.NewGuid()
+                numberOfStars = productDto.numberStart
             };
         }
         public static async Task<ImgAndVideoProduct> ToImgAndVideoProduct(IFormFile file, Product product)
@@ -35,6 +35,7 @@ namespace API.Extension
         {
             return new GetProductDto 
             {
+                Id = product.Id,
                 UserSellId = product.UserSellId,
                 Name = product.Name,
                 Price = product.Price,

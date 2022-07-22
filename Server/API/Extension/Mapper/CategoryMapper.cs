@@ -13,11 +13,11 @@ namespace API.Extension.Mapper
         {
             return new GetCategoryDto
             {
+                Id = category.Id,
                 name = category.name,
                 parentsCategoryId = category.parentsCategoryId,
                 subCategoryId = category.subCategoryId,
                 imgCategory = category.imgCategory,
-                sumProduct = category.products.Count()
             };
         }
         public static async Task<Category> ToCategoryEntity(this CreateCategoryDto categoryDto)
@@ -27,7 +27,6 @@ namespace API.Extension.Mapper
                 name = categoryDto.name,
                 parentsCategoryId = categoryDto.parentsCategoryId,
                 subCategoryId = categoryDto.subCategoryId,
-                products =  categoryDto.products,
                 imgCategory = await UpLoadFileService.SaveImage(categoryDto.imgCategory, "ImgCategory")
                 
             };

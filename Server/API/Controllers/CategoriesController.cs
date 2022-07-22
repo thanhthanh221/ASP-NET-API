@@ -25,6 +25,9 @@ namespace BackEnd.Controllers
         [HttpGet]
         public async Task<ActionResult> GetCategories()
         {
+            Response.Cookies.Append("Test", "Bui Viet Quang", new Microsoft.AspNetCore.Http.CookieOptions{
+                HttpOnly = true 
+            });
             return Ok((await categoryProduct.GetAllAsync()).Select(p => p.ToCategoryDto()));
         }
         [HttpGet("Id")]

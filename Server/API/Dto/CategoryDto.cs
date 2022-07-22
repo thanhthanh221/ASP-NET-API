@@ -9,14 +9,14 @@ namespace BackEnd.Dto
         [Required] String name, 
         IEnumerable<Guid> parentsCategoryId,
         IEnumerable<Guid> subCategoryId, 
-        [Required] IFormFile imgCategory, 
-        List<Guid> products
+        [Required] IFormFile imgCategory
     );
     public record GetCategoryDto
     {
         [Required]
+        public Guid Id {get; set;}
+        [Required]
         public String name {get; init;}
-        public int sumProduct {get; init;}
         [Required]
         public string imgCategory {get; set;}
         public IEnumerable<Guid> parentsCategoryId {get; init;}

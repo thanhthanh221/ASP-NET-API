@@ -18,6 +18,7 @@ using Infreastructure_Layer.Data.Identity;
 using Domain_Layer.Helpers;
 using Domain_Layer.Services;
 using Domain_Layer.Entities.Order;
+using BackEnd.Entities;
 
 namespace BackEnd
 {
@@ -47,7 +48,8 @@ namespace BackEnd
             services.AddMongoRepostory<ProductReviews>("Products_Reviews");
             services.AddMongoRepostory<Product>("Product");
             services.AddMongoRepostory<ImgProductReview>("ImgAndVideoReviewsProduct");
-            
+            services.AddMongoRepostory<RepositoryProduct>("RepositoryProduct");
+            services.AddMongoRepostory<WareHome>("WareHome");           
             services.AddMongoRepostory<Order>("Order");
 
             services.AddScoped<JwtService>();
@@ -99,7 +101,10 @@ namespace BackEnd
             app.UseRouting();
 
             app.UseCors(buider => {
-                buider.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                buider
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
             });
 
             app.UseAuthentication();

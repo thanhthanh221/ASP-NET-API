@@ -1,0 +1,63 @@
+.paging {
+
+    &__page {
+        @include flex(center, center);
+        height: 5rem;
+        margin: 3rem;
+        border-radius: 0.6rem;
+        background-color: #ffffff;
+        box-shadow: 0 0.8rem 2rem rgba(#5a6181, 0.05);
+        
+        &__numbers {
+            max-width: 90vw;
+            margin: 2rem;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-gap: 3rem;
+            @include flex(center, center);
+        }
+        &__numbers, &__btn, &__dots {
+            @include flex(center, center) ;
+            margin: 0.8rem;
+            font-size: 1.4rem;
+            cursor: pointer;
+            &:hover {
+                color: $paging-greyLight;
+            }
+        }
+      
+        &__dots {
+            width: 2.6rem;
+            height: 2.6rem;
+            color: $paging-greyLight;
+            cursor: initial;
+            
+        }
+      
+        &__numbers {
+            width: 2.6rem;
+            height: 2.6rem;
+            border-radius: 0.4rem;
+        }
+        &__btn {
+            color: $paging-greyLight;
+            box-shadow: 0 0.8rem 2rem rgba(#5a6181, 0.05);
+            border-radius: 0.6rem;
+            font-size: 2.3rem;
+            transition: all 0.3s ease;
+        }
+        &__active {
+            color: #ffffff;
+            background: $paging-color;
+            font-weight: 600;
+            border: 1px solid $paging-color;
+            color: $paging-greyLight-2;
+            pointer-events: initial;
+            
+            &:hover {
+                color: $paging-greyDark;
+            }
+        }
+    }
+    
+}
