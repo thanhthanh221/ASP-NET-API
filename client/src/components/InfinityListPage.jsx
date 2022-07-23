@@ -2,14 +2,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 
 import Grid from './Grid'
-import ProductCard from './ProductCard'
+import ProductCardBackEnd from './ProductCardBackEnd'
 
 const InfinityListPage = (props) => {
 
     const listRef = useRef(null);
-    
-    console.log(props.data);
-
     return (
         <div ref={listRef}>
             <Grid
@@ -20,13 +17,13 @@ const InfinityListPage = (props) => {
             >
                 {
                     props.data.map((item, index) => (
-                        <ProductCard
+                        <ProductCardBackEnd
                             key={index}
                             img01={item.image01}
                             img02={item.image02}
                             name={item.name}
                             price={Number(item.price)}
-                            Id = {item.Id}
+                            id = {item.id}
                         />
                     ))
                 }

@@ -19,7 +19,8 @@ namespace API.Extension
                 Describe = productDto.Describe,
                 DateTimeCreate = DateTimeOffset.UtcNow,
                 UserSellId = productDto.UserId,
-                numberOfStars = productDto.numberStart
+                numberOfStars = productDto.numberStart,
+                categories = productDto.CategoryId
             };
         }
         public static async Task<ImgAndVideoProduct> ToImgAndVideoProduct(IFormFile file, Product product)

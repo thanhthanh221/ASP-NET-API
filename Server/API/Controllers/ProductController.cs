@@ -34,22 +34,25 @@ namespace BackEnd.Controllers
             
         }
         [HttpGet]
-        public async Task<ActionResult> GetProductsAsync(int page)
+        public async Task<ActionResult> GetProductsAsync( int page)
         {
+            
             var imgcheck = ProductLinq.GroupImgProductDto(await imgProductRepository.GetAllAsync());
             var productFull = (await productRepository.GetAllAsync()); 
 
-            // Tổng bộ tất cả các sản phẩm trả vể
+                // Tổng bộ tất cả các sản phẩm trả vể
             var productAndImg = ProductLinq.ProductAndImgDto(imgcheck, productFull)
-                                .Skip((page - 1)* Page_Size).Take(Page_Size);
-                                
+                                .Skip(page* Page_Size).Take(Page_Size);
+                                               
             return Ok(
                 new 
                 {
                     page = page,
                     data =  (productAndImg.Count() != 0) ? productAndImg : null
                 }
-            );
+            );             
+            
+            
         }
         [HttpGet("Id")]
         public async Task<ActionResult<GetProductDto>> GetProductAsync(Guid Id)

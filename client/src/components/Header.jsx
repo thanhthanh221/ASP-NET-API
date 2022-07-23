@@ -10,7 +10,7 @@ const mainNav = [
     },
     {
         display: "Sản phẩm",
-        path: "/catalog"
+        path: "/danhMucSanPham"
     },
     {
         display: "Phụ kiện",

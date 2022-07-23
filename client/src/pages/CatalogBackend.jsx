@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react'
 import axios from 'axios'
+import { request } from '../utils/request'
 
 import Helmet from '../components/Helmet'
 import CheckBox from '../components/CheckBox'
@@ -10,10 +11,11 @@ import colors from '../assets/fake-data/product-color'
 import size from '../assets/fake-data/product-size'
 import Button from '../components/Button'
 import InfinityList from '../components/InfinityList'
-import { request } from '../utils/request'
 import InfinityListPage from '../components/InfinityListPage'
 import CheckBoxBackend from '../components/CheckBoxBackend'
 import Paging from '../components/Paging'
+import CheckBoxStart from '../components/CheckBoxStart'
+import numberStarProduct from '../assets/fake-data/product-Star'
 
 
 const CatalogBackend = () => {
@@ -42,7 +44,7 @@ const CatalogBackend = () => {
         request.get('/Product', 
         {
             params: {
-                page : page
+                page : page 
             }
         })
         .then((res) => {
@@ -137,6 +139,25 @@ const CatalogBackend = () => {
                                             name= {item.name}
                                             onChange= {(input) => filterSelect("CATEGORY", input.checked, item)}
                                             checked= {filter.category.includes(item.name)}
+                                        />
+                                    </div>
+                                ))
+                            }
+                        </div>
+                    </div>
+
+                    <div className="catalog__filter__widget">
+                        <div className="catalog__filter__widget__title">
+                            Đánh giá
+                        </div>
+                        <div className="catalog__filter__widget__content">
+                            {
+                                numberStarProduct.map((item, index) => (
+                                    <div key={index} className="catalog__filter__widget__content__item">
+                                        <CheckBoxStart
+                                            numberStar = {item.numberStar} 
+                                            onChange= {(input) => filterSelect("COLOR", input.checked, item)}
+                                            checked= {filter.color.includes(item.color)}
                                         />
                                     </div>
                                 ))
