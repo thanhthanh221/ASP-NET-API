@@ -6,11 +6,7 @@ import Helmet from '../components/Helmet'
 import CheckBox from '../components/CheckBox'
 
 import productData from '../assets/fake-data/products'
-import category from '../assets/fake-data/category'
-import colors from '../assets/fake-data/product-color'
-import size from '../assets/fake-data/product-size'
 import Button from '../components/Button'
-import InfinityList from '../components/InfinityList'
 import InfinityListPage from '../components/InfinityListPage'
 import CheckBoxBackend from '../components/CheckBoxBackend'
 import Paging from '../components/Paging'
@@ -29,7 +25,12 @@ const CatalogBackend = () => {
 
     const [productpage, setProductPage] = useState([]);
 
-    const [page, setPage] = useState(2);    
+    const [page, setPage] = useState(0);
+    
+    const [filterByStar, setFilterByStar] = useState(0);
+
+    const [filterByCategory, setFilterByCategory] = useState([]);
+
 
     useEffect(() => {
         request.get('/Categories')
@@ -44,7 +45,9 @@ const CatalogBackend = () => {
         request.get('/Product', 
         {
             params: {
-                page : page 
+                page : page,
+                filerByStar : filterByStar,
+                filerByCategory: filterByCategory
             }
         })
         .then((res) => {
@@ -53,13 +56,13 @@ const CatalogBackend = () => {
         .catch((err) => {
             console.log(err);
         });
-    },[page]);  
+    },[page, filterByStar, categories]);  
 
-    const productList = productData.getAllProducts()
+    const productList = productData.getAllProducts();
 
-    const [products, setProducts] = useState(productList)
+    const [products, setProducts] = useState(productList);
 
-    const [filter, setFilter] = useState(initFilter)
+    const [filter, setFilter] = useState(initFilter);
 
     const filterSelect = (type, checked, item) => {
         if (checked) {
@@ -80,6 +83,23 @@ const CatalogBackend = () => {
                     break
                 default:
             }
+        }
+    }
+    const onChangeCheckBox = (input) => {
+        console.log(input)
+    }
+    const onClickCheckStar = (e) => {
+        console.log(e.target);
+        let sum = 0;
+        if(e.target.classList[0] === 'checkBoxStart__Contener'  ) {
+            e.target.classList.toggle('checkBoxStart__CheckTrue');
+            e.target.childNodes.forEach((child) => {
+                if(child.classList[1] === 'checkBoxStart__Contener__Value__True'){
+                    sum += 1;
+
+                }
+            })
+            setFilterByStar(sum);
         }
     }
 
@@ -137,7 +157,7 @@ const CatalogBackend = () => {
                                     <div key={index} className="catalog__filter__widget__content__item">
                                         <CheckBoxBackend
                                             name= {item.name}
-                                            onChange= {(input) => filterSelect("CATEGORY", input.checked, item)}
+                                            onChange= {(input) => onChangeCheckBox(input.checked)}
                                             checked= {filter.category.includes(item.name)}
                                         />
                                     </div>
@@ -158,6 +178,9 @@ const CatalogBackend = () => {
                                             numberStar = {item.numberStar} 
                                             onChange= {(input) => filterSelect("COLOR", input.checked, item)}
                                             checked= {filter.color.includes(item.color)}
+                                            onClick= {(e) => onClickCheckStar(e)}
+                                            filerByStar = {filterByStar}
+
                                         />
                                     </div>
                                 ))

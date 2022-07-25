@@ -8,6 +8,7 @@ const CheckBoxBackend = (props) => {
     const onChange = () => {
         if (props.onChange) {
             props.onChange(inputRef.current);
+            console.log(inputRef.current.checked);
         }
     }
 
@@ -23,7 +24,6 @@ const CheckBoxBackend = (props) => {
 }
 
 CheckBoxBackend.propTypes = {
-    label: PropTypes.string.isRequired,
     checked: PropTypes.bool
 }
 

@@ -1,10 +1,12 @@
 .checkBoxStart {
     &__Contener {
         @include flex(center, flex-start);
+        display: inline-block;
+        padding: 0.25rem;
         pointer-events: inherit;
         &__Value {
             display: flex;
-            display: inline-block;
+            display: inline;
             margin: 0.25rem;
             font-size: 1.2rem;
         }
@@ -15,5 +17,9 @@
             margin-left: 0.5rem;
             font-size: 1.1rem;
         }
+    }
+    &__CheckTrue{
+        background-color: $checkBox-BackGroundStarColor;
+        border-radius: 0.5em;
     }
 }

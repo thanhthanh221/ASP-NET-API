@@ -3,11 +3,10 @@ import { BiCaretLeft, BiCaretRight} from "react-icons/bi"
 
 const Paging = (props) => {
     const [pagingNumber, SetPagingNumber] = useState([
-      props.page - 2,
-      props.page - 1,
       props.page ,
       props.page + 1,
       props.page + 2,
+      props.page + 3
     ]);
     
     const refPaging = useRef(null);

@@ -13,6 +13,7 @@ using Domain_Layer.Entities.Product;
 using Domain_Layer.Interfaces;
 using Domain_Layer.Services;
 using API.Extension;
+using API.Extension.Request;
 
 namespace BackEnd.Controllers
 {
@@ -34,23 +35,35 @@ namespace BackEnd.Controllers
             
         }
         [HttpGet]
-        public async Task<ActionResult> GetProductsAsync( int page)
+        public async Task<ActionResult> GetProductsAsync([FromQuery] FilterRequestProduct filter)
         {
-            
-            var imgcheck = ProductLinq.GroupImgProductDto(await imgProductRepository.GetAllAsync());
+            var imgcheck = ProductLinq.GroupImgProductDto(await imgProductRepository.GetAllAsync()).ToList();
             var productFull = (await productRepository.GetAllAsync()); 
 
-                // Tổng bộ tất cả các sản phẩm trả vể
-            var productAndImg = ProductLinq.ProductAndImgDto(imgcheck, productFull)
-                                .Skip(page* Page_Size).Take(Page_Size);
-                                               
-            return Ok(
-                new 
+                //     // Tổng bộ tất cả các sản phẩm trả vể
+                // var productAndImg = ProductLinq.ProductAndImgDto(imgcheck, productFull)
+                //                     .Skip(filter.page* Page_Size).Take(Page_Size);
+
+            if(filter.filerByCategory != null) 
+            {
+                foreach (var item in filter.filerByCategory)
                 {
-                    page = page,
-                    data =  (productAndImg.Count() != 0) ? productAndImg : null
-                }
-            );             
+                    IEnumerable<Product> products = (await productRepository.GetsAsync((p) => 
+                                                        p.categories.Contains(item))).ToHashSet();
+                    productFull = productFull.Where(p => products.Contains(p)).ToList();
+                }     
+            }
+            if(filter.filerByStar > 0)
+            {
+                productFull = (productFull.Where(p => p.numberOfStars >= filter.filerByStar)).ToList();
+            }                               
+                return Ok(
+                    new 
+                    {
+                        page = filter.page,
+                        data =  productFull.Skip(filter.page* Page_Size).Take(Page_Size)
+                    }
+                );           
             
             
         }
