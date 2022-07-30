@@ -18,9 +18,8 @@ using Infreastructure_Layer.Data.Identity;
 using Domain_Layer.Helpers;
 using Domain_Layer.Services;
 using Domain_Layer.Entities.Order;
-using BackEnd.Entities;
 
-namespace BackEnd
+namespace API
 {
     public class Startup
     {
@@ -43,7 +42,6 @@ namespace BackEnd
             // MongoDb
 
             services.AddMongoDb();
-            services.AddMongoRepostory<ImgAndVideoProduct>("ImgProduct");
             services.AddMongoRepostory<Category>("Categories");
             services.AddMongoRepostory<ProductReviews>("Products_Reviews");
             services.AddMongoRepostory<Product>("Product");

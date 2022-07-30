@@ -4,7 +4,7 @@ using Domain_Layer.Entities.Order;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace BackEnd.Dto
+namespace API.Dto.OrderDtos
 {
     public class GetOrderDto 
     {
@@ -40,16 +40,5 @@ namespace BackEnd.Dto
         [Required]
         [Range(1, int.MaxValue)]
         public int amonut {get; set;}
-    }
-    public class GetAddressDto
-    {
-        [Required]
-        public String City {get; set;}
-        [Required]
-        public String District {get; set;}
-        [Required]
-        public String Commune {get; set;}
-        [Required]
-        public String Street {get; set;}
     }
 }

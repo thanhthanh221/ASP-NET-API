@@ -1,11 +1,8 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react'
-import axios from 'axios'
+import React, { useState, useEffect, useRef } from 'react'
 import { request } from '../utils/request'
 
 import Helmet from '../components/Helmet'
-import CheckBox from '../components/CheckBox'
 
-import productData from '../assets/fake-data/products'
 import Button from '../components/Button'
 import InfinityListPage from '../components/InfinityListPage'
 import CheckBoxBackend from '../components/CheckBoxBackend'
@@ -16,11 +13,6 @@ import numberStarProduct from '../assets/fake-data/product-Star'
 
 const CatalogBackend = () => {
 
-    const initFilter = {
-        category: [],
-        color: [],
-        size: []
-    }
     const [categories, setCategory] = useState([]);
 
     const [productpage, setProductPage] = useState([]);
@@ -30,7 +22,6 @@ const CatalogBackend = () => {
     const [filterByStar, setFilterByStar] = useState(0);
 
     const [filterByCategory, setFilterByCategory] = useState([]);
-
 
     useEffect(() => {
         request.get('/Categories')
@@ -42,54 +33,44 @@ const CatalogBackend = () => {
         })
     },[]);
     useEffect(() => {
-        request.get('/Product', 
-        {
-            params: {
-                page : page,
-                filerByStar : filterByStar,
-                filerByCategory: filterByCategory
-            }
-        })
+        var params = new URLSearchParams();
+        params.append("page", page);
+        params.append("filerByStar",filterByStar);
+        if(filterByCategory.length) {
+            filterByCategory.forEach((p) => {
+                params.append("filerByCategory", p);
+            })
+        }
+        const paramsRequest = {
+            params: params
+        }
+
+        request.get('/Product', paramsRequest)
         .then((res) => {
             setProductPage(res.data.data);
+            res.data.data.forEach((item) => {
+                item.imgAndVideoProducts.forEach((imgProduct) => {
+                    
+                })
+                
+            })
+            console.log(res.data.data);
         })
         .catch((err) => {
             console.log(err);
         });
-    },[page, filterByStar, categories]);  
+    },[page, filterByStar, filterByCategory]);  
 
-    const productList = productData.getAllProducts();
-
-    const [products, setProducts] = useState(productList);
-
-    const [filter, setFilter] = useState(initFilter);
-
-    const filterSelect = (type, checked, item) => {
-        if (checked) {
-            switch(type) {
-                case "CATEGORY":
-                    setFilter(
-                        {...filter,
-                        category: [ ...filter.category,item.name]})
-                    break;
-                
-                default:
-            }
-        } else {
-            switch(type) {
-                case "CATEGORY":
-                    const newCategory = filter.category.filter(e => e !== item.name)
-                    setFilter({...filter, category: newCategory})
-                    break
-                default:
-            }
+    const onChangeCheckBox = (input) => {
+        if(input.checked) {
+            setFilterByCategory([...filterByCategory ,input.id]);
+        }
+        else if(!input.checked) {
+            const updateFilterByCategory = filterByCategory.filter(p => p !== input.id)
+            setFilterByCategory(updateFilterByCategory);
         }
     }
-    const onChangeCheckBox = (input) => {
-        console.log(input)
-    }
     const onClickCheckStar = (e) => {
-        console.log(e.target);
         let sum = 0;
         if(e.target.classList[0] === 'checkBoxStart__Contener'  ) {
             e.target.classList.toggle('checkBoxStart__CheckTrue');
@@ -103,38 +84,10 @@ const CatalogBackend = () => {
         }
     }
 
-    const clearFilter = () => setFilter(initFilter)
-
-    const updateProducts = useCallback(
-        () => {
-            let temp = productList
-
-            if (filter.category.length > 0) {
-                temp = temp.filter(e => filter.category.includes(e.name))
-            }
-
-            if (filter.color.length > 0) {
-                temp = temp.filter(e => {
-                    const check = e.colors.find(color => filter.color.includes(color))
-                    return check !== undefined
-                })
-            }
-
-            if (filter.size.length > 0) {
-                temp = temp.filter(e => {
-                    const check = e.size.find(size => filter.size.includes(size))
-                    return check !== undefined
-                })
-            }
-
-            setProducts(temp)
-        },
-        [filter, productList],
-    )
-
-    useEffect(() => {
-        updateProducts()
-    }, [updateProducts])
+    const clearFilter = () => {
+        setFilterByStar(0);
+        setFilterByCategory([]);
+    }
 
     const filterRef = useRef(null)
 
@@ -157,8 +110,9 @@ const CatalogBackend = () => {
                                     <div key={index} className="catalog__filter__widget__content__item">
                                         <CheckBoxBackend
                                             name= {item.name}
-                                            onChange= {(input) => onChangeCheckBox(input.checked)}
-                                            checked= {filter.category.includes(item.name)}
+                                            id= {item.id}
+                                            onChange= {(input) => onChangeCheckBox(input)}
+                                            checked= {filterByCategory.includes(item.id)}
                                         />
                                     </div>
                                 ))
@@ -176,11 +130,8 @@ const CatalogBackend = () => {
                                     <div key={index} className="catalog__filter__widget__content__item">
                                         <CheckBoxStart
                                             numberStar = {item.numberStar} 
-                                            onChange= {(input) => filterSelect("COLOR", input.checked, item)}
-                                            checked= {filter.color.includes(item.color)}
                                             onClick= {(e) => onClickCheckStar(e)}
                                             filerByStar = {filterByStar}
-
                                         />
                                     </div>
                                 ))

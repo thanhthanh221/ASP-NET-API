@@ -1,32 +1,29 @@
 using System;
 using System.Collections.Generic;
-using Domain_Layer.Base;
 
-namespace Domain_Layer.Entities.Product
+namespace API.Dto.ProductReviewDtos
 {
-    public class ProductReviews : BaseEntity
+    public class GetProductReviewDto
     {
-        public ProductReviews(Guid Id,
-                            Guid userId,
-                            Guid productId, 
-                            string comment, 
-                            int numberOfStars, 
-                            DateTimeOffset dateTimeCreate, 
-                            List<string> photo)
+
+        public GetProductReviewDto(Guid id, 
+                                    Guid userId, 
+                                    Guid productId, 
+                                    string comment, 
+                                    int numberOfStars, 
+                                    DateTimeOffset dateTimeCreate, 
+                                    List<string> photo)
         {
+            Id = id;
             this.userId = userId;
             ProductId = productId;
             Comment = comment;
             this.numberOfStars = numberOfStars;
             this.dateTimeCreate = dateTimeCreate;
             Photo = photo;
-            this.Id = Id;
-        }
-        public ProductReviews()
-        {
-            
         }
 
+        public Guid Id {get; set;}
         public Guid userId {get; set;}
         public Guid ProductId {get; set;}
         public string Comment {get; set;}

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 
-namespace BackEnd.Dto
+namespace API.Dto
 {
     public record CreateCategoryDto(
         [Required] String name, 

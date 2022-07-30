@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using BackEnd.Dto;
 using System;
 using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Domain_Layer.Entities.Identity;
 using Domain_Layer.Helpers;
 using Infreastructure_Layer.Data.Repositories;
-using Infreastructure_Layer.Data;
+using API.Dto;
 
 namespace BackEnd.Controllers 
 {

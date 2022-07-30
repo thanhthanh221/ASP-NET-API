@@ -1,4 +1,4 @@
-using BackEnd.Dto;
+using API.Dto.OrderDtos;
 using Domain_Layer.Entities.Identity;
 using Domain_Layer.Entities.Order;
 using Domain_Layer.Models.OrderAggregate;
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace API.Extension 
+namespace API.Extension.Mapper 
 {
     public static class OrderMapper 
     {
@@ -42,10 +42,7 @@ namespace API.Extension
                 BuyerId = createUpdateOrder.BuyerId,
                 Description = createUpdateOrder.Description,
                 deliveryInformation = new List<DeliveryInformation> {
-                    new DeliveryInformation {
-                        TimeLine = DateTimeOffset.UtcNow,
-                        Status = "Tạo Đơn Hàng Thành Công"
-                    }
+                    new DeliveryInformation (DateTimeOffset.UtcNow, "Tạo đơn hàng thành công")
                 },
                 address = createUpdateOrder.Address,
                 orderProducts = createUpdateOrder.ProductOrder.ToList<OrderProduct>(),

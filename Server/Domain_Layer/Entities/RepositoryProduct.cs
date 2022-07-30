@@ -2,7 +2,7 @@ using System;
 using Domain_Layer.Base;
 using Domain_Layer.Entities;
 
-namespace BackEnd.Entities
+namespace Domain_Layer.Entities
 {
     public class RepositoryProduct : BaseEntity
     {

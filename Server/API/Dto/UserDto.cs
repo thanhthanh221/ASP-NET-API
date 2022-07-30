@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-namespace BackEnd.Dto
+namespace API.Dto
 {
     public record CreateUserDto(
         [Required] string Name, 

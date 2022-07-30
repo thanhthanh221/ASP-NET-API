@@ -3,53 +3,58 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BackEnd.Dto;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Threading;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Domain_Layer.Entities.Product;
 using Domain_Layer.Interfaces;
 using Domain_Layer.Services;
-using API.Extension;
+using Domain_Layer.Entities.Identity;
 using API.Extension.Request;
+using API.Extension.Build.ProductDtoBuider;
+using API.Dto;
+using API.Extension.Mapper;
 
-namespace BackEnd.Controllers
+namespace API.Controllers
 {
     [Route("Product")]
     [ApiController]
     public class ProductController : ControllerBase
     {
         private readonly IAsyncRepository<Product> productRepository;
-        private readonly IAsyncRepository<ImgAndVideoProduct> imgProductRepository;
-
+        private readonly UserManager<ApplicationUser> userManager;
         private static int Page_Size {get; set;} = 6;
-
-        public ProductController(
-            IAsyncRepository<Product> productRepository,
-            IAsyncRepository<ImgAndVideoProduct> imgProductRepository)
+        public ProductController(IAsyncRepository<Product> productRepository,
+                                UserManager<ApplicationUser> userManager)
         {
+            this.userManager = userManager;
             this.productRepository = productRepository;
-            this.imgProductRepository = imgProductRepository;
-            
         }
+
         [HttpGet]
         public async Task<ActionResult> GetProductsAsync([FromQuery] FilterRequestProduct filter)
         {
-            var imgcheck = ProductLinq.GroupImgProductDto(await imgProductRepository.GetAllAsync()).ToList();
-            var productFull = (await productRepository.GetAllAsync()); 
-
-                //     // Tổng bộ tất cả các sản phẩm trả vể
-                // var productAndImg = ProductLinq.ProductAndImgDto(imgcheck, productFull)
-                //                     .Skip(filter.page* Page_Size).Take(Page_Size);
+            IEnumerable<Product> productFull = (await productRepository.GetAllAsync());
+            List<GetProductDto> productDtos = new List<GetProductDto>();                                            
+            foreach (var product in productFull)
+            { 
+                productDtos.Add(new GetProductDtoBuilder()
+                                    .AddId(product.Id)
+                                    .AddCategoryId(product.categories)
+                                    .AddDescribe(product.Describe)
+                                    .AddUserSellId(product.UserSellId)
+                                    .AddImgAndVideoProducts(product.ImgAndVideoProducts)
+                                    .AddNumberOfStars(product.numberOfStars)
+                                    .AddName(product.Name)
+                                    .AddPrice(product.Price)
+                                    .Build());    
+            }
 
             if(filter.filerByCategory != null) 
             {
                 foreach (var item in filter.filerByCategory)
                 {
                     IEnumerable<Product> products = (await productRepository.GetsAsync((p) => 
-                                                        p.categories.Contains(item))).ToHashSet();
+                                                        p.categories.Contains(item))).ToList();
                     productFull = productFull.Where(p => products.Contains(p)).ToList();
                 }     
             }
@@ -61,7 +66,7 @@ namespace BackEnd.Controllers
                     new 
                     {
                         page = filter.page,
-                        data =  productFull.Skip(filter.page* Page_Size).Take(Page_Size)
+                        data = productFull.Skip(filter.page* Page_Size).Take(Page_Size)
                     }
                 );           
             
@@ -80,22 +85,42 @@ namespace BackEnd.Controllers
             }
             GetProductDto productDto = product.ToProductDto();
 
-            productDto.files = ProductLinq.FindImgProduct(await imgProductRepository.GetAllAsync(), Id).Select(p => p.Photo); 
+            // productDto.files = ProductLinq.FindImgProdu
+            // ct(await imgProductRepository.GetAllAsync(), Id).Select(p => p.Photo); 
         
             return (productDto is null) ? NotFound() : Ok(productDto);
         }
         [HttpPost]
         public async Task<ActionResult> CreateProductAsync([FromForm] CreateUpdateProductDto productDto)
         {
-            Product product = productDto.ToProductEntity();
-            await productRepository.CreateAsync(product);
-
+            ApplicationUser user = await userManager.FindByIdAsync(productDto.UserId.ToString());
+            if(user is null) 
+            {
+                return NotFound(
+                    new {
+                        message = "Không tìm thấy thông tin người dùng"
+                    }
+                );
+            }
             // Xử lý ảnh
+            List<string> imgAndVideoProducts = new List<string>();
             foreach (var file in productDto.files)
             {
-                ImgAndVideoProduct imgProduct = await ProductMapper.ToImgAndVideoProduct(file, product);
-                await imgProductRepository.CreateAsync(imgProduct);                 
+                string photo = await UpLoadFileService.SaveImage(file, "ImgProduct");  
+                imgAndVideoProducts.Add(photo);        
             }
+            Product product = new GetProductBuilder()
+                            .AddId(Guid.NewGuid())
+                            .AddDateCreate(DateTimeOffset.Now)
+                            .AddCategiries(productDto.CategoryId)
+                            .AddPrice(productDto.Price)
+                            .AddDescribe(productDto.Describe)
+                            .AddStarProduct(productDto.numberStart)
+                            .AddUserSellId(productDto.UserId)
+                            .AddNameProduct(productDto.Name)
+                            .AddFileProduct(imgAndVideoProducts)
+                            .Build();
+            await productRepository.CreateAsync(product);
             return CreatedAtAction(nameof(CreateProductAsync), new {Id = product.Id}, product); 
         }
         [Authorize]
@@ -108,16 +133,10 @@ namespace BackEnd.Controllers
                 return NotFound();
             }
             await productRepository.DeleteAsync(product);
-
-            var imgcheck = ProductLinq.FindImgProduct(await imgProductRepository.GetAllAsync(), Id);
             
-            if(imgcheck.Count() != 0)
+            foreach (var item in product.ImgAndVideoProducts)
             {
-                foreach (var item in imgcheck)
-                {
-                    UpLoadFileService.DeleteImage(item.Photo, "ImgProduct"); 
-                    await imgProductRepository.DeleteAsync(item);            
-                }
+                UpLoadFileService.DeleteImage(item, "ImgProduct");            
             }
             return NoContent();            
         }
@@ -126,11 +145,28 @@ namespace BackEnd.Controllers
         public async Task<ActionResult> UpdateItem(Guid Id , [FromForm] CreateUpdateProductDto productDto)
         {
             Product product = await productRepository.GetAsync(Id);
-            if(product is null)
+            ApplicationUser user = await userManager.FindByIdAsync(productDto.UserId.ToString());
+            if(product is null || user is null)
             {
                 return NotFound();
             }
-            Product productUpdate = productDto.ToProductEntity();
+            List<string> imgAndVideoProducts = new List<string>();
+            foreach (var file in productDto.files)
+            {
+                string photo = await UpLoadFileService.SaveImage(file, "ImgProduct");  
+                imgAndVideoProducts.Add(photo);        
+            }
+            Product productUpdate = new GetProductBuilder()
+                            .AddId(Id)
+                            .AddDateCreate(DateTimeOffset.Now)
+                            .AddCategiries(productDto.CategoryId)
+                            .AddPrice(productDto.Price)
+                            .AddDescribe(productDto.Describe)
+                            .AddStarProduct(productDto.numberStart)
+                            .AddUserSellId(productDto.UserId)
+                            .AddNameProduct(productDto.Name)
+                            .AddFileProduct(imgAndVideoProducts)
+                            .Build();
             await productRepository.UpdateAsync(productUpdate);
 
             return NoContent();

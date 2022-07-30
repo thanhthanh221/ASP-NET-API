@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BackEnd.Dto;
 using Microsoft.AspNetCore.Http;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
@@ -13,9 +12,9 @@ using Domain_Layer.Interfaces;
 using Domain_Layer.Entities.Order;
 using Domain_Layer.Entities.Identity;
 using Domain_Layer.Entities.Product;
-using Domain_Layer.Models.OrderAggregate;
-using API.Extension;
 using API.Extension.Build.OrderDtoBuilder;
+using API.Dto.OrderDtos;
+using API.Extension.Mapper;
 
 namespace API.Controllers
 {
@@ -135,14 +134,69 @@ namespace API.Controllers
             return CreatedAtAction(nameof(CreateOrderAsync),order);
         }
         [HttpPut("Id")]
-        public async Task<IActionResult> UpdateOrderAsync(CreateUpdateOrderDto createUpdateOrderDto)
+        public async Task<IActionResult> UpdateOrderAsync(CreateUpdateOrderDto createUpdateOrderDto, Guid Id)
         {
+            Order order =  await orderRepository.GetAsync(Id);
+            ApplicationUser user = 
+                await userManager.FindByIdAsync(createUpdateOrderDto.BuyerId.ToString());
+            if(order is null || user is null)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+        [HttpPatch("Id/Address")]
+        public async Task<ActionResult> UpdateAddressAsync(Guid Id, [FromForm] GetAddressDto address) 
+        {
+            Order order = await orderRepository.GetAsync(Id);
+            if(order is null)
+            {
+                return NotFound(
+                    new {
+                        message = "Không tìm thấy Đơn hàng"
+                    }
+                );
+            }
+            order.address = new Address(address.City, address.Commune, address.District, address.Street);
+            await orderRepository.UpdateAsync(order);
+
+            return NoContent();
+        }
+        [HttpPatch("Id/AddDeliveryInformation")]
+        public async Task<ActionResult> AddDeliveryInformationAsync(Guid Id,[FromForm] DeliveryInformationDto  deliveryDto)
+        {
+            Order order = await orderRepository.GetAsync(Id);
+
+            if(order is null)
+            {
+                return NotFound(
+                    new {
+                        message = "Không có danh đơn hàng trên"
+                    }
+                );
+            }
+            Order newOrder = order;
+            
+            newOrder.deliveryInformation.Add(new DeliveryInformation(DateTimeOffset.UtcNow, deliveryDto.Status));
+
+            await orderRepository.UpdateAsync(newOrder);
+
             return NoContent();
         }
         [HttpDelete("Id")]
         public async Task<IActionResult> DeleteOrderAsync(Guid Id)
         {
-            
+            Order orderDelete = await orderRepository.GetAsync(Id);
+            if(orderDelete is null)
+            {
+                return NotFound(
+                    new {
+                        message = "Không tìm thấy order"
+                    }
+                );
+            }
+            await orderRepository.DeleteAsync(orderDelete);
+
             return NoContent();
         }
     }

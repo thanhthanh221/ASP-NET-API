@@ -3,37 +3,34 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BackEnd.Dto;
 using Domain_Layer.Entities;
 using Domain_Layer.Interfaces;
 using Domain_Layer.Services;
 using API.Extension.Mapper;
+using API.Dto;
 
-namespace BackEnd.Controllers
+namespace API.Controllers
 {
     [ApiController]
     [Route("Categories")]
     public class CategoriesController : ControllerBase
     {
-        private readonly IAsyncRepository<Category> categoryProduct;
+        private readonly IAsyncRepository<Category> categoryRepository;
 
-        public CategoriesController(IAsyncRepository<Category> categoryProduct)
+        public CategoriesController(IAsyncRepository<Category> categoryRepository)
         {
-            this.categoryProduct  = categoryProduct;
+            this.categoryRepository  = categoryRepository;
             
         }
         [HttpGet]
         public async Task<ActionResult> GetCategories()
         {
-            Response.Cookies.Append("Test", "Bui Viet Quang", new Microsoft.AspNetCore.Http.CookieOptions{
-                HttpOnly = true 
-            });
-            return Ok((await categoryProduct.GetAllAsync()).Select(p => p.ToCategoryDto()));
+            return Ok((await categoryRepository.GetAllAsync()).Select(p => p.ToCategoryDto()));
         }
         [HttpGet("Id")]
         public async Task<ActionResult<Category>> GetCategory(Guid Id)
         {
-            Category category = (await categoryProduct.GetAsync(Id));
+            Category category = (await categoryRepository.GetAsync(Id));
             if(category is null)
             {
                 return NotFound();
@@ -44,26 +41,43 @@ namespace BackEnd.Controllers
         public async Task<ActionResult<GetCategoryDto>> PostCategory([FromForm] CreateCategoryDto categoryDto)
         {
             // Tạo sản phẩm mới từ bên Phía Client Nhập vào
-            Category categoryProductValue = await categoryDto.ToCategoryEntity();
-            await categoryProduct.CreateAsync(categoryProductValue);            
+            Category categoryRepositoryValue = await categoryDto.ToCategoryEntity();
+            await categoryRepository.CreateAsync(categoryRepositoryValue);            
             
-            return CreatedAtAction(nameof(PostCategory), new {Id = categoryProductValue.Id});
+            return CreatedAtAction(nameof(PostCategory), new {Id = categoryRepositoryValue.Id});
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateCategory()
+        public async Task<ActionResult> UpdateCategoryAsync([FromForm] CreateCategoryDto categoryDto, Guid CategoryId)
         {
-            return NoContent();
+            Category category = await categoryRepository.GetAsync(CategoryId);
+            if(category is null)
+            {
+                return NotFound(
+                    new {
+                        message = "Không tìm thấy Danh mục đã yêu cầu"
+                    }
+                );
+            }
+            Category newCategory = new Category(CategoryId,
+                                        category.name, 
+                                        category.imgCategory, 
+                                        category.parentsCategoryId, 
+                                        category.subCategoryId);
+            await categoryRepository.UpdateAsync(newCategory);
+            
+            return Ok(newCategory);
+
         }
         [HttpDelete("Id")]
         public async Task<ActionResult> DeleteCategory(Guid Id)
         {
-            Category category = (await categoryProduct.GetAsync(Id));
+            Category category = (await categoryRepository.GetAsync(Id));
             if(category == null)
             {
                 return NotFound();
             }
             UpLoadFileService.DeleteImage(category.imgCategory, "ImgCategory");
-            await categoryProduct.DeleteAsync(category);
+            await categoryRepository.DeleteAsync(category);
             return NoContent();
         }
     }

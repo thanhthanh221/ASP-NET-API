@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 
 import { Link } from 'react-router-dom'
@@ -10,16 +10,17 @@ import { set } from '../redux/product-modal/productModalSlice'
 import Button from './Button'
 
 import numberWithCommas from '../utils/numberWithCommas'
+import image1 from '../assets/images/ImgProduct/Ảnh-chụp-màn-hình-2022-06-17-221530.jpg'
 
 const ProductCardBackEnd = (props) => {
-
-    const dispatch = useDispatch()
-
+    const dispatch = useDispatch();
+    console.log(require('../assets/images/ImgProduct/Ảnh-chụp-màn-hình-2022-06-17-221530.jpg').default);
+    console.log(props.img)
     return (
         <div className="product-card">
             <Link to={`/danhMucSanPham/${props.id}`}>
                 <div className="product-card__image">
-                    <img src={props.img01} alt="" />
+                    <img src={"/static/media/"+ props.img}  alt="" />
                     <img src={props.img02} alt="" />
                 </div>
                 <h3 className="product-card__name">{props.name}</h3>
@@ -53,3 +54,6 @@ ProductCardBackEnd.propTypes = {
 }
 
 export default ProductCardBackEnd
+// const {data: res} = await axios.get(`${url}photo-2.jpg`,
+// {  headers: { Authorization: `${tokenApp}` },responseType: 'json',});
+// return res;};

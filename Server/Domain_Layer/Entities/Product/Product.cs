@@ -13,5 +13,6 @@ namespace Domain_Layer.Entities.Product
         public List<Guid> categories {get; set;}
         public DateTimeOffset DateTimeCreate {get; set;}
         public double numberOfStars {get; set;}
+        public List<string> ImgAndVideoProducts {get; set;}
     }
 }

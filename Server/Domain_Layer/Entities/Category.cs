@@ -7,6 +7,23 @@ namespace Domain_Layer.Entities
 {
     public class Category : BaseEntity
     {
+        public Category()
+        {
+        }
+
+        public Category(Guid Id,
+            string name,
+            string imgCategory, 
+            IEnumerable<Guid> parentsCategoryId, 
+            IEnumerable<Guid> subCategoryId)
+        {
+            this.Id = Id;
+            this.name = name;
+            this.imgCategory = imgCategory;
+            this.parentsCategoryId = parentsCategoryId;
+            this.subCategoryId = subCategoryId;
+        }
+
         [Required]
         public String name {get; set;} 
         [Required]
