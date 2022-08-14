@@ -5,6 +5,9 @@ namespace API.Dto.ProductReviewDtos
 {
     public class GetProductReviewDto
     {
+        public GetProductReviewDto()
+        {
+        }
 
         public GetProductReviewDto(Guid id, 
                                     Guid userId, 
@@ -29,7 +32,7 @@ namespace API.Dto.ProductReviewDtos
         public string Comment {get; set;}
         public int numberOfStars {get; set;}
         public DateTimeOffset dateTimeCreate {get; set;}
-        public List<string> Photo {get; set;} 
-        
+        public List<string> Photo {get; set;}
+        public string userName {get; set;}    
     }
 }

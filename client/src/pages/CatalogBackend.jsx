@@ -48,12 +48,6 @@ const CatalogBackend = () => {
         request.get('/Product', paramsRequest)
         .then((res) => {
             setProductPage(res.data.data);
-            res.data.data.forEach((item) => {
-                item.imgAndVideoProducts.forEach((imgProduct) => {
-                    
-                })
-                
-            })
             console.log(res.data.data);
         })
         .catch((err) => {
@@ -72,8 +66,9 @@ const CatalogBackend = () => {
     }
     const onClickCheckStar = (e) => {
         let sum = 0;
-        if(e.target.classList[0] === 'checkBoxStart__Contener'  ) {
-            e.target.classList.toggle('checkBoxStart__CheckTrue');
+        if(e.target.classList[0] === 'checkBoxStart__Contener' && 
+                        e.target.classList[1] !== 'checkBoxStart__CheckTrue' ) {
+            e.target.classList.add('checkBoxStart__CheckTrue');
             e.target.childNodes.forEach((child) => {
                 if(child.classList[1] === 'checkBoxStart__Contener__Value__True'){
                     sum += 1;
@@ -82,6 +77,10 @@ const CatalogBackend = () => {
             })
             setFilterByStar(sum);
         }
+        else if(e.target.classList[1] === 'checkBoxStart__CheckTrue') {
+            e.target.classList.remove('checkBoxStart__CheckTrue');
+            setFilterByStar(0);
+        } 
     }
 
     const clearFilter = () => {
@@ -167,3 +166,4 @@ const CatalogBackend = () => {
 }
 
 export default CatalogBackend
+

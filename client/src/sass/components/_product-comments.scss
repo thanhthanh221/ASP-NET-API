@@ -1,0 +1,129 @@
+.product-comments {
+    box-shadow:0px 2px 7px 1px #aa9191;
+    background: '#ffffff';
+    width:95%;
+    margin: 0 auto;
+    padding: 10px;
+    margin-top:50px;
+    &__headding {
+        &__title {
+            color: $product-comments;
+            margin: 0px 0px 0px 15px;
+            padding: 0px 0px 10px 0px;
+            font-size: 30px;
+        }
+    }
+    &__boddy {
+        margin-top: 2vh;
+        &__top {
+            margin-bottom: 8vh;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+
+            &__ratingreview {
+                width: 17%;
+                &__value {
+                    background: #C0C0C0;
+                    border-radius: 13px;
+                    height:19px;
+                    width:100%;
+                    margin:0px 0px 10px 0px;
+                    &:after {
+                        content: '';
+                        display: block;
+                        background: #337AB7;
+                        border-radius: 10px;
+                        height:19px;
+                        width:40%;
+                        margin: 0px;
+                        padding: 0px;
+
+                    }
+                }
+            }
+            &__startpart {
+                margin-left: 2%;
+                &__div {
+                    margin-bottom: 5px;
+                    &__value {
+                        margin-left: 5px;
+                        color: #FFFF00;
+                    }
+                }
+            }
+            &__checkStar {
+                h2 {
+                    font-size: 75px;
+                    margin-left: 21%;
+                    color: #337AB7;
+
+                }
+                p {
+                    font-size: 20px;
+                    margin: 0px;
+                    color: $product-comments;
+                }
+
+                margin-left: 5%;
+                margin-right: 8%;
+                &__div {
+                    &__icon {
+                        color: #FFFF00;
+                        margin-right: 7px;
+                    }
+                }
+            }
+        }
+        &__bottom {
+            margin-top: 4vh;
+            display: flex;
+            flex-direction: column;
+            &__comment {
+                display: flex;
+                flex-direction: row;
+                margin: 5px 0px 25px 0px;
+                &__infomations {
+                    width: 17%;
+                    display: flex;
+                    flex-direction: row;
+                    margin-left: 10px;
+                    &__image {
+                        width: 30%;
+                        text-align: center;
+                        margin-right: 6px;
+                        margin-left: 7px;
+                    }
+                    &__value {
+                        h4, p {
+                            margin: 0px 0px 15px 0px;
+                        }
+                        h4 {
+                            font-weight: 200;
+                        }
+                        p {
+                            font-weight: bold;
+                            &::before {
+                                font-weight: 200    ;
+                                content: 'User: ';
+                            }
+                        }
+                    }
+                }
+                &__star {
+                    &__value {
+                        margin-bottom: 8px;
+                        &__icon {
+                            margin-right: 5px;
+                            color: #FFFF00;
+                        }
+                    }
+                }
+            }
+        }
+        
+
+
+    }
+}

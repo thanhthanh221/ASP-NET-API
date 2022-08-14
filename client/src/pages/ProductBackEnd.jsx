@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import Helmet from '../components/Helmet'
 import Section, {SectionBody, SectionTitle} from '../components/Section'
@@ -8,31 +8,72 @@ import ProductView from '../components/ProductView'
 
 import productData from '../assets/fake-data/products'
 import { useParams } from 'react-router-dom'
+import ProductViewBackEnd from '../components/ProductViewBackEnd'
+import ProductCardBackEnd from '../components/ProductCardBackEnd'
+import { request } from '../utils/request'
+import ReviewProduct from '../components/ReviewProduct/ReviewProduct'
 
 
-const ProductBackEnd = (props) => {
+const ProductBackEnd = () => {
     const params = useParams();
+    const [product, setProduct] = useState({});
+    const [commentsOfProduct, setCommentsOfProduct] = useState([]);
+    const [page, SetPage] = useState(0);
 
-    const product = productData.getProductBySlug(params.Id);
+    useEffect(() => {
+        request.get('/Product/Id',{
+            params :{
+                Id: params.id,
+            }
+        })
+        .then((res) => {
+            setProduct(res.data);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    },[]);
+    useEffect(() => {
+        request.get('/ProductReview/ProductId',{
+            params :{
+                ProductId: params.id,
+                page: page
+            }
+        })
+        .then((res) => {
+            setCommentsOfProduct(res.data);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
 
-    const relatedProducts = productData.getProducts(8)
+    },[page])
+
+    // const relatedProducts = productData.getProducts(8)
 
     React.useEffect(() => {
         window.scrollTo(0,0)
     }, [product])
-
     return (
         <Helmet title={"Trang Sản Phẩm"}>
+            {/* Phẩn đầu của sản phẩm */}
             <Section>
                 <SectionBody>
-                    <ProductView product={product}/>
+                    <ProductViewBackEnd product={product}/>
+                    <ReviewProduct 
+                        CommentsInPage={commentsOfProduct}
+                        page = {page}
+                        setPage = {(input) => SetPage(input)}
+                        product = {product}
+                        />
                 </SectionBody>
             </Section>
+            {/* Phần hiển thị thông tin sản phẩm khác */}
             <Section>
                 <SectionTitle>
                     Khám phá thêm
                 </SectionTitle>
-                <SectionBody>
+                {/* <SectionBody>
                     <Grid
                         col={4}
                         mdCol={2}
@@ -41,7 +82,7 @@ const ProductBackEnd = (props) => {
                     >
                         {
                             relatedProducts.map((item, index) => (
-                                <ProductCard
+                                <ProductCardBackEnd
                                     key={index}
                                     img01={item.image01}
                                     img02={item.image02}
@@ -52,7 +93,7 @@ const ProductBackEnd = (props) => {
                             ))
                         }
                     </Grid>
-                </SectionBody>
+                </SectionBody> */}
             </Section>
         </Helmet>
     )

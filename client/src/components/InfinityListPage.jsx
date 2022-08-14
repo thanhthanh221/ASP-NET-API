@@ -19,10 +19,10 @@ const InfinityListPage = (props) => {
                     props.data.map((item, index) => (
                         <ProductCardBackEnd
                             key={index}
-                            img={item.imgAndVideoProducts[0]}
                             name={item.name}
                             price={Number(item.price)}
                             id = {item.id}
+                            product = {item}
                         />
                     ))
                 }

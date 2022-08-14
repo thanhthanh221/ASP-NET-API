@@ -9,6 +9,8 @@ import Product from '../pages/Product'
 import Layout from '../components/Layout'
 import CatalogBackend from '../pages/CatalogBackend'
 import ProductBackEnd from '../pages/ProductBackEnd'
+import CartBackEnd from '../pages/CartBackEnd'
+import LoginBackEnd from '../pages/LoginBackEnd'
 
 const RoutesProject = () => {
     return (
@@ -19,11 +21,11 @@ const RoutesProject = () => {
                     <Route path='catalog/:slug' element= {<Product />}/>
                     <Route path='catalog' element= {<Catalog />}/>
                     <Route path= 'catalog/?slug' element= {<Product/>} />
-                    <Route path= 'cart' element={<Cart />}/>
+                    <Route path= 'cart' element={<CartBackEnd />}/>
                     <Route path= 'danhMucSanPham' element= {<CatalogBackend/>}/>
                     <Route path = 'danhMucSanPham/:id' element = {<ProductBackEnd/>} />
-                    <Route path='*' element = {<Home />} />
                 </Route>
+                <Route path='dangNhap' element={<LoginBackEnd />} />
             </Routes>
         </BrowserRouter>
     )

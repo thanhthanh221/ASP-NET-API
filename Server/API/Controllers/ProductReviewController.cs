@@ -38,35 +38,6 @@ namespace API.Controllers
             this.productReviewsRepository = productReviewsRepository;
             this.productRepository = productRepository;
         }
-
-        // [HttpGet("ProductId")]
-        // public async Task<IActionResult> GetCommentsProduct(Guid ProductId, int page)
-        // {
-        //     IReadOnlyCollection<ProductReviews> CommentRespones =  await productsReviews.GetsAsync((ProductReviews p) => p.ProductId.Equals(ProductId));
-        //     // var ImgAndVideoComment = from a in await imgProductReview.GetAllAsync() 
-        //     //                         group a by a.CommentId;
-
-        //     // var ApiRespone = (from pv in CommentRespones.ToList()
-        //     //                 join v in ImgAndVideoComment on pv.Id equals v.Key into t
-        //     //                 from v in t.DefaultIfEmpty()
-        //     //                 orderby pv.Comment
-        //     //                 select new {
-        //     //                     userComment = pv.userId,
-        //     //                     Comment = pv.Comment,
-        //     //                     Start = pv.numberOfStars,
-        //     //                     file = (v == null) ? null : v.Select(h => h.Photo) 
-        //     //                 }).
-        //     //                 Skip((page - 1)* Page_Size).Take(Page_Size);
-        //     // if(ApiRespone == null)
-        //     // {
-        //     //     return NotFound();
-        //     // }
-        //     // return Ok(new {
-        //     //     Api = ApiRespone,
-        //     //     page = page
-        //     // });
-        //     return Ok();
-        // }
         [HttpGet("Id")]
         public async Task<IActionResult> GetCommentProduct(Guid Id)
         {
@@ -82,88 +53,175 @@ namespace API.Controllers
             GetProductReviewDto getProductReviewDto = productReview.ConverToDto();
             return Ok(getProductReviewDto);
         }
-        // [HttpPost]
-        // public async Task<IActionResult> PostCommentAsync( [FromForm] PostPutProductReviewDto postPutProductReviewDto)
-        // {
-        //     // ProductReviews prv = new () {
-        //     //     Id = Guid.NewGuid(),
-        //     //     ProductId = postPutProductReviewDto.ProductId,
-        //     //     userId = postPutProductReviewDto.userId,   
-        //     //     numberOfStars = postPutProductReviewDto.numberOfStars,
-        //     //     Comment = postPutProductReviewDto.comment,
-        //     //     dateTimeCreate = DateTimeOffset.Now
-        //     // };
-        //     // await productsReviews.CreateAsync(prv);
+        [HttpGet("ProductId")]
+        public async Task<ActionResult> GetCommentProductAsync(int page, Guid ProductId)
+        {
+            Product product = await productRepository.GetAsync(ProductId);
+            if(product is null)
+            {
+                return NotFound(
+                    new {
+                        message = "Không tìm thấy sản phẩm"
+                    }
+                );
+            }
+            List<GetProductReviewDto>productReviewDtos = new List<GetProductReviewDto>();
 
-        //     // if(postPutProductReviewDto.files.Length != 0)
-        //     // {
-        //     //     foreach (var file in postPutProductReviewDto.files)
-        //     //     {
-        //     //         ImgProductReview imgPrv = new()
-        //     //         {
-        //     //             Id = Guid.NewGuid(),
-        //     //             Photo = await UpLoadFileService.SaveImage(file, "ImgProductReview"),
-        //     //             CommentId = prv.Id,
-                        
-        //     //         };
-        //     //         await imgProductReview.CreateAsync(imgPrv);                         
-        //     //     }
-        //     // }       
-        //     // return CreatedAtAction(nameof(PostCommentAsync), new {Id = prv.Id}, prv);
-        //     return CreatedAtAction(nameof(PostCommentAsync));
-        // }
-        // [HttpPut("Id")]
-        // public async Task<IActionResult> PutCommentAsync (Guid CommentId,[FromForm] PostPutProductReviewDto postPutProductReviewDto)
-        // {
-        //     ProductReviews comment = await productsReviews.GetAsync(CommentId);
-        //     if(comment is null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     ProductReviews prv = new ProductReviews()
-        //     {
-        //         Id = CommentId,
-        //         ProductId = comment.ProductId,
-        //         Comment = postPutProductReviewDto.comment,
-        //         numberOfStars = postPutProductReviewDto.numberOfStars,
-        //         dateTimeCreate = comment.dateTimeCreate
-        //     };
-        //     IReadOnlyCollection<ImgProductReview> imgAndVideoRv = await imgProductReview.
-        //                         GetsAsync((ImgProductReview i) => i.CommentId.Equals(CommentId));
-        //     if(imgAndVideoRv.Count() != 0)
-        //     {
-        //         foreach (ImgProductReview item in imgAndVideoRv)
-        //         {
-        //             await imgProductReview.DeleteAsync(item);
-        //             UpLoadFileService.DeleteImage(item.Photo, "ImgProductReview");                
-        //         };
-        //     };
-        //     await productsReviews.UpdateAsync(prv);
-        //     return NoContent();
-        // }
-        // [HttpDelete("Id")]
-        // public async Task<IActionResult> DeleteCommentAsync(Guid CommentId)
-        // {
-        //     ProductReviews prv = await productsReviews.GetAsync(CommentId);
+            List<ProductReviews> productReviews = 
+                    (await productReviewsRepository
+                        .GetsAsync((proRiviews) => proRiviews.ProductId.Equals(ProductId)))
+                        .OrderByDescending(proRiviews => proRiviews.dateTimeCreate)
+                        .Skip(page*Page_Size).Take(Page_Size).ToList();
+            if(productReviews.Count != 0)
+            {
+                foreach (var item in productReviews)
+                {
+                    ApplicationUser user = await userManager.FindByIdAsync(item.userId.ToString());
+                    GetProductReviewDto productReviewDto = new GetProductReviewDto() {
+                        Id = item.Id,
+                        userId = item.userId,
+                        ProductId = item.ProductId,
+                        Comment = item.Comment,
+                        numberOfStars = item.numberOfStars,
+                        dateTimeCreate = item.dateTimeCreate,
+                        Photo = item.Photo != null ? item.Photo : null,
+                        userName = user != null ? user.UserName : null
+                    };
+                    productReviewDtos.Add(productReviewDto);
+                }
+            }
+                 
+            return Ok(productReviewDtos);
 
-        //     if(prv is null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     IReadOnlyCollection<ImgProductReview> imgAndVideoRv = await imgProductReview.
-        //                         GetsAsync((ImgProductReview i) => i.CommentId.Equals(CommentId));
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostCommentAsync( [FromForm] PostPutProductReviewDto postPutProductReviewDto)
+        {
+            List<string> photosAndVideos = new List<string>();
+            if(postPutProductReviewDto.files != null)
+            {
+                foreach (var item in postPutProductReviewDto.files)
+                {
+                    string photoToString = await UpLoadFileService.SaveImage(item,  "ImgProductReview");
+                    photosAndVideos.Add(photoToString);
+                    
+                }
+            }
+            ApplicationUser user = await userManager.FindByIdAsync(postPutProductReviewDto.userCommentId.ToString());
+            Product product = await productRepository.GetAsync(postPutProductReviewDto.ProductId);
+            if(user is null || product is null) 
+            {
+                return NotFound(
+                    new {
+                        message = "Không tìm thấy sản phẩm hoặc người dùng"
+                    }
+                );
+            }
+            
+            ProductReviews productReviews = new ProductReviews() {
+                Id = Guid.NewGuid(),
+                userId = postPutProductReviewDto.userCommentId,
+                ProductId = postPutProductReviewDto.ProductId,
+                numberOfStars = postPutProductReviewDto.numberOfStars,
+                dateTimeCreate = DateTimeOffset.UtcNow,
+                Comment = postPutProductReviewDto.comment,
+                Photo = photosAndVideos
+            };
+            await productReviewsRepository.CreateAsync(productReviews);
 
-        //     if(imgAndVideoRv.Count() != 0)
-        //     {
-        //         foreach (ImgProductReview item in imgAndVideoRv)
-        //         {
-        //             await imgProductReview.DeleteAsync(item);
-        //             UpLoadFileService.DeleteImage(item.Photo, "ImgProductReview");                
-        //         };
-        //     };
+            List<ProductReviews> productReviewsOfProduct = (await productReviewsRepository.GetsAsync(
+                    (productRiviews) => 
+                        productRiviews.ProductId.Equals(product.Id) && 
+                        productRiviews.numberOfStars != 0))
+                    .ToList();
 
-        //     return NoContent();
-        // }
+            if(productReviewsOfProduct.Count() != 0)
+            {
+                double countStartOfProduct = Convert.ToDouble(productReviewsOfProduct.
+                    Sum((productReviews) => productReviews.numberOfStars))/productReviewsOfProduct.Count();
+
+                Product ProductNew = product;
+                ProductNew.numberOfStars = countStartOfProduct;
+                await productRepository.UpdateAsync(ProductNew);  
+            }
+            
+            return CreatedAtAction(nameof(PostCommentAsync),productReviews);
+        }
+        [HttpPatch("UpdatenumberOfStarsComments")]
+        public async Task<ActionResult> PatchNumberStarOfCommentAsync(Guid CommentsId,[FromForm] int Stars)
+        {
+            ProductReviews productReviews = await productReviewsRepository.GetAsync(CommentsId);
+            Product product = await productRepository.GetAsync(productReviews.ProductId);
+            if(productReviews is null || product is null)
+            {
+                return NotFound(
+                    new {
+                        message = "Không có bình luận trên"
+                    }
+                );
+            }
+            ProductReviews newProductReview = productReviews;
+            newProductReview.numberOfStars = Stars;
+            await productReviewsRepository.UpdateAsync(newProductReview);
+
+            List<ProductReviews> productReviewsOfProduct = (await productReviewsRepository.GetsAsync(
+                    (productRiviews) => 
+                        productRiviews.ProductId.Equals(product.Id) && 
+                        productRiviews.numberOfStars != 0))
+                    .ToList();
+
+            if(productReviewsOfProduct.Count() != 0)
+            {
+                double countStartOfProduct = Convert.ToDouble(productReviewsOfProduct.
+                    Sum((productReviews) => productReviews.numberOfStars))/productReviewsOfProduct.Count();
+
+                Product ProductNew = product;
+                ProductNew.numberOfStars = countStartOfProduct;
+                await productRepository.UpdateAsync(ProductNew);  
+            }
+            return NoContent();
+        }
+        [HttpDelete("Id")]
+        public async Task<IActionResult> DeleteCommentAsync(Guid CommentId)
+        {
+            ProductReviews productReviews = await productReviewsRepository.GetAsync(CommentId);
+            Product product = await productRepository.GetAsync(productReviews.ProductId);
+            if(productReviewsRepository is null) 
+            {
+                return NotFound(
+                    new {
+                        message = "Không tìm thấy bình luận"
+                    }
+                );
+            }
+            await productReviewsRepository.DeleteAsync(productReviews);
+
+            if(productReviews.Photo != null)
+            {
+                foreach (var imageOfVideo in productReviews.Photo)
+                {
+                    UpLoadFileService.DeleteImage(imageOfVideo, "ImgProductReview");   
+                }
+            }
+
+            List<ProductReviews> productReviewsOfProduct = (await productReviewsRepository.GetsAsync(
+                    (productRiviews) => 
+                        productRiviews.ProductId.Equals(product.Id) && 
+                        productRiviews.numberOfStars != 0))
+                    .ToList();
+
+            if(productReviewsOfProduct.Count() != 0)
+            {
+                double countStartOfProduct = Convert.ToDouble(productReviewsOfProduct.
+                    Sum((productReviews) => productReviews.numberOfStars))/productReviewsOfProduct.Count();
+
+                Product ProductNew = product;
+                ProductNew.numberOfStars = countStartOfProduct;
+                await productRepository.UpdateAsync(ProductNew);  
+            }
+
+            return NoContent();
+        }
 
     }
 }

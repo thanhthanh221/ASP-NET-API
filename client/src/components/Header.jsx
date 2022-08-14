@@ -38,7 +38,7 @@ const Header = () => {
             }
         })
         return () => {
-            window.removeEventListener("scroll")
+            window.removeEventListener("scroll", null);
         };
     }, []);
 

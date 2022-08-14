@@ -13,6 +13,7 @@ using Domain_Layer.Entities.Identity;
 using Domain_Layer.Helpers;
 using Infreastructure_Layer.Data.Repositories;
 using API.Dto;
+using API.Dto.UserDtos;
 
 namespace BackEnd.Controllers 
 {
@@ -36,7 +37,22 @@ namespace BackEnd.Controllers
         }
 
         public IConfiguration Configuration { get; }
-        
+        [HttpGet]
+        public async Task<ActionResult> UserInfomationAsync(Guid UserId)
+        {
+            ApplicationUser user = await userManager.FindByIdAsync(UserId.ToString());
+            if(user is null)
+            {
+                return NotFound(
+                    new {
+                        message = "Không tìm thấy người dùng trên"
+                    }
+                );
+            }
+            UserInfomationDto useDto = new UserInfomationDto(user.Id, user.UserName);
+
+            return Ok(useDto);
+        }
         [HttpPost("Login")]
         // Đăng nhập bằng email
         public async Task<ActionResult> LoginAsync([FromForm] LoginUserDto LoginDto)

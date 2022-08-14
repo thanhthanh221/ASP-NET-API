@@ -9,10 +9,9 @@ namespace API.Dto.ProductReviewDtos
         [Required]
         public Guid ProductId {set; get;}
         [Required]
-        public Guid userId;
+        public Guid userCommentId {set; get;}
         [Required]
         public string comment {set; get;}
-        [Required]
         [Range(1,5)] 
         public int numberOfStars {set; get;}
         public  IFormFile[] files {set; get;}

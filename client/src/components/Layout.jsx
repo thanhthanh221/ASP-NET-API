@@ -5,6 +5,8 @@ import { Outlet } from 'react-router-dom'
 import Header from './Header'
 import Footer from './Footer'
 import ProductViewModal from './ProductViewModal'
+import ProductViewModalBackEnd from './ProductViewModalBackEnd'
+import LoginBackEnd from '../pages/LoginBackEnd'
   
 const Layout = () => {
     return (
@@ -16,7 +18,7 @@ const Layout = () => {
                 </div>
             </div>  
             <Footer />
-            <ProductViewModal />
+            <ProductViewModalBackEnd />
         </div>
     )
 }

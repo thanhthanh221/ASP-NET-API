@@ -21,13 +21,16 @@ namespace API.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IAsyncRepository<Product> productRepository;
+        private readonly IAsyncRepository<ProductReviews> productReviewsRepository;
         private readonly UserManager<ApplicationUser> userManager;
         private static int Page_Size {get; set;} = 6;
         public ProductController(IAsyncRepository<Product> productRepository,
-                                UserManager<ApplicationUser> userManager)
+                                UserManager<ApplicationUser> userManager,
+                                IAsyncRepository<ProductReviews> productReviewsRepository)
         {
             this.userManager = userManager;
             this.productRepository = productRepository;
+            this.productReviewsRepository = productReviewsRepository;
         }
 
         [HttpGet]
@@ -43,7 +46,7 @@ namespace API.Controllers
                                     .AddDescribe(product.Describe)
                                     .AddUserSellId(product.UserSellId)
                                     .AddImgAndVideoProducts(product.ImgAndVideoProducts)
-                                    .AddNumberOfStars(product.numberOfStars)
+                                    .AddNumberOfStars(Math.Round(product.numberOfStars,1))
                                     .AddName(product.Name)
                                     .AddPrice(product.Price)
                                     .Build());    
@@ -60,7 +63,7 @@ namespace API.Controllers
             }
             if(filter.filerByStar > 0)
             {
-                productFull = (productFull.Where(p => p.numberOfStars >= filter.filerByStar)).ToList();
+                productFull = (productFull.Where(p => p.numberOfStars > filter.filerByStar - 1)).ToList();
             }                               
                 return Ok(
                     new 
@@ -88,7 +91,7 @@ namespace API.Controllers
             // productDto.files = ProductLinq.FindImgProdu
             // ct(await imgProductRepository.GetAllAsync(), Id).Select(p => p.Photo); 
         
-            return (productDto is null) ? NotFound() : Ok(productDto);
+            return (productDto is null) ? NotFound() : Ok(product);
         }
         [HttpPost]
         public async Task<ActionResult> CreateProductAsync([FromForm] CreateUpdateProductDto productDto)

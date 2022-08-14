@@ -107,6 +107,13 @@
                     color: $main-color;
                 }
             }
+            &__value {
+                &:hover {
+                    color: $main-color;
+                }
+                color: '#fffff9'
+                
+            }
         }
     }
 }

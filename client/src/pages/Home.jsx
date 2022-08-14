@@ -27,7 +27,7 @@ const Home = () => {
             {/* end hero slider */}
 
             {/* policy section */}
-            <Section>
+            {/* <Section>
                 <SectionBody>
                     <Grid
                         col={4}
@@ -46,11 +46,11 @@ const Home = () => {
                         }
                     </Grid>
                 </SectionBody>
-            </Section>
+            </Section> */}
             {/* end policy section */}
 
             {/* best selling section */}
-            <Section>
+            {/* <Section>
                 <SectionTitle>
                     top sản phẩm bán chạy trong tuần
                 </SectionTitle>
@@ -75,7 +75,7 @@ const Home = () => {
                         }
                     </Grid>
                 </SectionBody>
-            </Section>
+            </Section> */}
             {/* end best selling section */}
 
             {/* new arrival section */}
@@ -108,17 +108,17 @@ const Home = () => {
             {/* end new arrival section */}
             
             {/* banner */}
-            <Section>
+            {/* <Section>
                 <SectionBody>
                     <Link to="/catalog">
                         <img src={banner} alt="" />
                     </Link>
                 </SectionBody>
-            </Section>
+            </Section> */}
             {/* end banner */}
 
             {/* popular product section */}
-            <Section>
+            {/* <Section>
                 <SectionTitle>
                     phổ biến
                 </SectionTitle>
@@ -143,7 +143,7 @@ const Home = () => {
                         }
                     </Grid>
                 </SectionBody>
-            </Section>
+            </Section> */}
             {/* end popular product section */}
         </Helmet>
     )

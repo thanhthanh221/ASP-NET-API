@@ -1,0 +1,82 @@
+.Log {
+    &__header {
+        height: 10vh;
+        display: flex;
+        align-items: center;
+        &__image {
+            margin-left: 200px;
+            width: 60px;
+            height: 60px;
+        }
+        &__text {
+            font-size: 30px;
+            color: $main-color;
+            margin-left: 30px;
+        }
+    }
+    &__container {
+        height: 80vh;
+        background-color: $main-color;
+        display: flex;
+        justify-content:space-evenly;
+        align-items: center;
+        &__image {
+            width: 300px;
+            height: 300px;
+            justify-content: center;
+        }
+        &__form {
+            display: flex;
+            flex-direction: column;
+            justify-content:space-evenly;
+            align-items: center;
+            border-radius: 5px;
+            background-color: #fff;
+            width: 400px;
+            height: 450px;
+            box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+            flex-basis: auto;
+            flex-shrink: 1;
+            &__header {
+                display: flex;
+                justify-content: flex-start;
+                font-size: 25px;
+                color: $main-color;
+            }
+            &__emailMk {
+                width: 90%;
+                height: 40px;
+                text-align: center;
+            }
+            &__button {
+                width: 90%;
+                align-items: center;
+                display: flex;
+                justify-content: space-between;
+            }
+            &__FbGgGit {
+                display: flex;
+                width: 90%;
+                height: 50px;
+                justify-content: space-between;
+                &__value {
+                    display: flex;
+                    border: 1px solid #555;
+                    width: 30%;
+                    height: 75%;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: #fff;
+                }
+            }
+            &__footer {
+                flex-grow: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+            }
+                
+        }
+    }
+}
