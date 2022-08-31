@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 
-import Grid from './Grid'
-import ProductCardBackEnd from './ProductCardBackEnd'
+import Grid from '../Customs/Grid'
+import ProductCardBackEnd from '../Cart/ProductCardBackEnd'
 
 const InfinityListPage = (props) => {
 

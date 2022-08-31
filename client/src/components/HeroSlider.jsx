@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import Button from './Button'
+import Button from './Customs/Button'
 
 const HeroSlider = (props) => {
 
@@ -37,9 +37,7 @@ const HeroSlider = (props) => {
     return (
         <div className="hero-slider">
             {
-                data.map((item, index) => (
-                    <HeroSliderItem key={index} item={item} active={index === activeSlide}/>
-                ))
+                <img className='hero-slider__img' src={require('../assets/images/hero-bg.jpg').default} />
             }
             {
                 props.control ? (
@@ -79,7 +77,7 @@ const HeroSliderItem = (props) => (
                 <span>{props.item.description}</span>
             </div>
             <div className="hero-slider__item__info__btn">
-                <Link to={props.item.path}> element
+                <Link to={props.item.path}>
                     <Button
                         backgroundColor={props.item.color}
                         icon="bx bx-cart"

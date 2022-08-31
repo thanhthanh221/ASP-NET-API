@@ -4,10 +4,9 @@ import { Outlet } from 'react-router-dom'
 
 import Header from './Header'
 import Footer from './Footer'
-import ProductViewModal from './ProductViewModal'
-import ProductViewModalBackEnd from './ProductViewModalBackEnd'
-import LoginBackEnd from '../pages/LoginBackEnd'
-  
+import ProductViewModalBackEnd from '../Product/ProductViewModalBackEnd'
+
+
 const Layout = () => {
     return (
         <div>
@@ -16,7 +15,7 @@ const Layout = () => {
                 <div className='main'>
                     <Outlet />
                 </div>
-            </div>  
+            </div>
             <Footer />
             <ProductViewModalBackEnd />
         </div>

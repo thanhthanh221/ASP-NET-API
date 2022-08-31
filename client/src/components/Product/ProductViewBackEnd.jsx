@@ -3,24 +3,24 @@ import PropTypes from 'prop-types'
 
 import { useDispatch } from 'react-redux'
 
-import { addItem } from '../redux/shopping-cart/cartItemsSlide'
-import { remove } from '../redux/product-modal/productModalSlice'
+import { addItem } from '../../redux/shopping-cart/cartItemsSlide'
+import { remove } from '../../redux/product-modal/productModalSlice'
 
-import {GrFormAdd} from "react-icons/gr";
+import { GrFormAdd } from "react-icons/gr";
 import { FiMinus } from "react-icons/fi";
 
-import Button from './Button'
-import numberWithCommas from '../utils/numberWithCommas'
+import Button from '../Customs/Button'
+import numberWithCommas from '../../utils/numberWithCommas'
 import { useNavigate } from 'react-router-dom'
-import ReviewProduct from './ReviewProduct/ReviewProduct'
 
 const ProductViewBackEnd = (props) => {
     const navigate = useNavigate();
-    
+
     const dispatch = useDispatch();
 
     const [descriptionExpand, setDescriptionExpand] = useState(false)
-    
+    console.log(props.product.imgAndVideoProducts);
+
     //Chưa gán giá trị cho nó
     const [color, setColor] = useState(undefined)
 
@@ -31,12 +31,12 @@ const ProductViewBackEnd = (props) => {
     const updateQuantity = (type) => {
         if (type === 'plus') {
             setQuantity(quantity + 1)
-        } 
+        }
         else {
             setQuantity(quantity - 1 < 1 ? 1 : quantity - 1)
         }
     }
-    
+
     // // Gọi khi mà product thay đổi
     // useEffect(() => {
     //     setPreviewImg(product.image01)
@@ -44,13 +44,13 @@ const ProductViewBackEnd = (props) => {
     //     setColor(undefined)
     //     setSize(undefined)
     // }, [product])
-    
+
     // // Nếu chưa chọn
 
     const addToCart = () => {
         let newItem = {
-            product : props.product,
-            quantity : quantity
+            product: props.product,
+            quantity: quantity
         }
         if (dispatch(addItem(newItem))) {
             alert('Success')
@@ -61,8 +61,8 @@ const ProductViewBackEnd = (props) => {
 
     const goToCart = () => {
         let newItem = {
-            product : props.product,
-            quantity : quantity
+            product: props.product,
+            quantity: quantity
         }
         if (dispatch(addItem(newItem))) {
             alert('Success');
@@ -77,7 +77,7 @@ const ProductViewBackEnd = (props) => {
             <div className="product__images">
                 <div className="product__images__list">
                     <div className="product__images__list__item">
-                        <img src='https://cf.shopee.vn/file/411e4eb8dd4e63329fc2fea0c96ac279' alt="" />
+                        <img src={'data:image/jpeg;base64,' + props.product.imgAndVideoProducts} />
                     </div>
                 </div>
                 {/* <div className="product__images__main">
@@ -87,7 +87,7 @@ const ProductViewBackEnd = (props) => {
                     <div className="product-description__title">
                         Chi tiết sản phẩm
                     </div>
-                    <div className="product-description__content" dangerouslySetInnerHTML={{__html: props.product.describe}}></div>
+                    <div className="product-description__content" dangerouslySetInnerHTML={{ __html: props.product.describe }}></div>
                     <div className="product-description__toggle">
                         <Button size="sm" onClick={() => setDescriptionExpand(!descriptionExpand)}>
                             {
@@ -146,7 +146,7 @@ const ProductViewBackEnd = (props) => {
                             {quantity}
                         </div>
                         <div className="product__info__item__quantity__btn" onClick={() => updateQuantity('plus')}>
-                            <GrFormAdd/>
+                            <GrFormAdd />
                         </div>
                     </div>
                 </div>

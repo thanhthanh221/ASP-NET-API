@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { request } from '../utils/request'
 
-import Helmet from '../components/Helmet'
+import Helmet from '../components/Layout/Helmet'
 
-import Button from '../components/Button'
-import InfinityListPage from '../components/InfinityListPage'
-import CheckBoxBackend from '../components/CheckBoxBackend'
-import Paging from '../components/Paging'
-import CheckBoxStart from '../components/CheckBoxStart'
+import Button from '../components/Customs/Button'
+import InfinityListPage from '../components/Product/InfinityListPage'
+import CheckBoxBackend from '../components/CheckBox/CheckBoxBackend'
+import Paging from '../components/Customs/Paging'
+import CheckBoxStart from '../components/CheckBox/CheckBoxStart'
 import numberStarProduct from '../assets/fake-data/product-Star'
 
 

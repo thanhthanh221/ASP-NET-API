@@ -64,24 +64,60 @@
             color: $main-color;
         }
 
-        &__item:hover {
+        &__item > :not(ul):hover {
             color: $main-color;
         }
 
-        &__left,
-        &__right {
+        &__left {
             @include flex(center, center);
             height: 100%;
         }
 
         &__right {
-            font-size: 2.25rem;
+            width: 15%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-right: 5%;
+            font-size: 2rem;
 
             &__item {
                 @include flex(center, center);
 
                 @include tablet {
                     margin-left: 10px;
+                }
+            }
+            &__text {
+                font-size: 20px;
+                & a {
+                    display: block;
+                }
+                &:hover ul {
+                    visibility: inherit;
+                    opacity: 1;
+                }
+                & ul {
+                    -o-transition: 0.3s;
+                    transition: 0.3s;
+                    visibility: hidden;
+                    width: 135px;
+                    background-color: #00FFFF;
+                    border-radius: 5px;
+                    position: absolute;
+                    display: flex;
+                    justify-content: center;
+                }
+                & ul :first-child {
+                    margin-top: 20px;
+                }
+                & ul li {
+                    font-weight: 400;
+                    font-size: 17px;
+                    margin-bottom: 10px;
+                    &:hover {
+                        color: $main-bg;
+                    }
                 }
             }
 

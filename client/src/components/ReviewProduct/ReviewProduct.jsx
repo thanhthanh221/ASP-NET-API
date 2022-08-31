@@ -1,7 +1,7 @@
 import React from 'react'
 import CommentsByUser from './CommentsByUser'
 import ReviewProductCheckStar from './ReviewProductCheckStar'
-import Paging from '../Paging'
+import Paging from '../Customs/Paging'
 import StartPart from './StartPart'
 
 const ReviewProduct = (props) => {

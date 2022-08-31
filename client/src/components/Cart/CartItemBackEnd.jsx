@@ -2,13 +2,13 @@ import React, { useState, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
 import { useDispatch } from 'react-redux'
-import { updateItem, removeItem } from '../redux/shopping-cart/cartItemsSlide'
+import { updateItem, removeItem } from '../../redux/shopping-cart/cartItemsSlide'
 
-import {GrFormAdd} from "react-icons/gr";
+import { GrFormAdd } from "react-icons/gr";
 import { FiMinus } from "react-icons/fi";
-import {RiDeleteBin5Line} from 'react-icons/ri'
+import { RiDeleteBin5Line } from 'react-icons/ri'
 
-import numberWithCommas from '../utils/numberWithCommas'
+import numberWithCommas from '../../utils/numberWithCommas'
 import { Link } from 'react-router-dom'
 
 const CartItemBackEnd = (props) => {
@@ -19,19 +19,19 @@ const CartItemBackEnd = (props) => {
 
     const [item, setItem] = useState(props.item)
     const [quantity, setQuantity] = useState(props.item.quantity)
-    
+
     useEffect(() => {
         setItem(props.item)
         setQuantity(props.item.quantity)
     }, [props.item])
-    
+
     console.log(props.item);
     const updateQuantity = (opt) => {
         if (opt === '+') {
-            dispatch(updateItem({...item, quantity: quantity + 1}))
+            dispatch(updateItem({ ...item, quantity: quantity + 1 }))
         }
         if (opt === '-') {
-            dispatch(updateItem({...item, quantity: quantity - 1 === 0 ? 1 : quantity - 1}))
+            dispatch(updateItem({ ...item, quantity: quantity - 1 === 0 ? 1 : quantity - 1 }))
         }
     }
 
@@ -47,12 +47,12 @@ const CartItemBackEnd = (props) => {
     return (
         <div className="cart__item" ref={itemRef}>
             <div className="cart__item__image">
-                <img src='https://cf.shopee.vn/file/411e4eb8dd4e63329fc2fea0c96ac279' alt="" />
+                <img src={'data:image/jpeg;base64,' + item.product.imgAndVideoProducts} />
             </div>
             <div className="cart__item__info">
                 <div className="cart__item__info__name">
                     <Link to={`/danhMucSanPham/${item.product.id}`}>
-                        {`${item.product.name}` }
+                        {`${item.product.name}`}
                     </Link>
                 </div>
                 <div className="cart__item__info__price">
@@ -61,7 +61,7 @@ const CartItemBackEnd = (props) => {
                 <div className="cart__item__info__quantity">
                     <div className="product__info__item__quantity">
                         <div className="product__info__item__quantity__btn" onClick={() => updateQuantity('-')}>
-                            <FiMinus/>
+                            <FiMinus />
                         </div>
                         <div className="product__info__item__quantity__input">
                             {quantity}
@@ -73,7 +73,7 @@ const CartItemBackEnd = (props) => {
                 </div>
                 <div className="cart__item__del">
                     <i onClick={() => removeCartItem()}>
-                        <RiDeleteBin5Line className='cart__item__del__value' size={35}/>
+                        <RiDeleteBin5Line className='cart__item__del__value' size={35} />
                     </i>
                 </div>
             </div>

@@ -5,11 +5,11 @@ import { Link } from 'react-router-dom'
 
 import { useDispatch } from 'react-redux'
 
-import { set } from '../redux/product-modal/productModalSlice'
+import { set } from '../../redux/product-modal/productModalSlice'
 
-import Button from './Button'
+import Button from '../Customs/Button'
 
-import numberWithCommas from '../utils/numberWithCommas'
+import numberWithCommas from '../../utils/numberWithCommas'
 
 const ProductCardBackEnd = (props) => {
     const dispatch = useDispatch();
@@ -17,7 +17,7 @@ const ProductCardBackEnd = (props) => {
         <div className="product-card">
             <Link to={`/danhMucSanPham/${props.product.id}`}>
                 <div className="product-card__image">
-                    <img src='https://cf.shopee.vn/file/411e4eb8dd4e63329fc2fea0c96ac279'  alt="" />
+                    <img src={'data:image/jpeg;base64,'+ props.product.imgAndVideoProducts} />
                 </div>
                 <h3 className="product-card__name">{props.name}</h3>
                 <div className="product-card__price">
@@ -29,7 +29,7 @@ const ProductCardBackEnd = (props) => {
             </Link>
             <div className="product-card__btn">
                 <Button
-                    size="sm"    
+                    size="sm"
                     animate={true}
                     onClick={() => dispatch(set(props.product))}
                 >

@@ -8,11 +8,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Domain_Layer.Helpers
 {
-   public class JwtService
+    public class JwtService
     {
         private readonly IConfiguration Configuration;
         private string secureKey = "BuiVietQuangCheckPass";
-        public string jwt {get; set;}
+        public string jwt { get; set; }
 
         public JwtService(IConfiguration configuration)
         {
@@ -33,23 +33,5 @@ namespace Domain_Layer.Helpers
 
             return token;
         }
-        // giải thuật jwt
-        public JwtSecurityToken Verify(string jwt)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            Byte[] key = Encoding.ASCII.GetBytes(secureKey);
-
-            tokenHandler.ValidateToken(jwt, new TokenValidationParameters
-                {   
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidAudience = Configuration["JWT:ValidAudience"],
-                    ValidIssuer = Configuration["JWT:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
-                }, out SecurityToken validatedToken);
-
-            return (JwtSecurityToken) validatedToken;
-        }
-        
     }
 }

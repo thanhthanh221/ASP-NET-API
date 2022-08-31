@@ -3,12 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import Helmet from '../components/Helmet'
-import Button from '../components/Button'
+import Helmet from '../components/Layout/Helmet'
+import Button from '../components/Customs/Button'
 
 import productData from '../assets/fake-data/products'
 import numberWithCommas from '../utils/numberWithCommas'
-import CartItemBackEnd from '../components/CartItemBackEnd'
+import CartItemBackEnd from '../components/Cart/CartItemBackEnd'
 
 const CartBackEnd = () => {
 

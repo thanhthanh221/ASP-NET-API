@@ -1,15 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
-import Helmet from '../components/Helmet'
-import Section, {SectionBody, SectionTitle} from '../components/Section'
-import Grid from '../components/Grid'
-import ProductCard from '../components/ProductCard'
-import ProductView from '../components/ProductView'
+import Helmet from '../components/Layout/Helmet'
+import Section, {SectionBody, SectionTitle} from '../components/Layout/Section'
+import Grid from '../components/Customs/Grid'
 
 import productData from '../assets/fake-data/products'
 import { useParams } from 'react-router-dom'
-import ProductViewBackEnd from '../components/ProductViewBackEnd'
-import ProductCardBackEnd from '../components/ProductCardBackEnd'
+import ProductViewBackEnd from '../components/Product/ProductViewBackEnd'
 import { request } from '../utils/request'
 import ReviewProduct from '../components/ReviewProduct/ReviewProduct'
 

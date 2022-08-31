@@ -1,12 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Helmet from '../components/Helmet'
+import Helmet from '../components/Layout/Helmet'
 import HeroSlider from '../components/HeroSlider'
-import Section, { SectionTitle, SectionBody } from '../components/Section'
+import Section, { SectionTitle, SectionBody } from '../components/Layout/Section'
 import PolicyCard from '../components/PolicyCard'
-import Grid from '../components/Grid'
-import ProductCard from '../components/ProductCard'
+import Grid from '../components/Customs/Grid'
 
 import heroSliderData from '../assets/fake-data/hero-slider'
 import policy from '../assets/fake-data/policy'
@@ -90,18 +89,6 @@ const Home = () => {
                         smCol={1}
                         gap={20}
                     >
-                        {
-                            productData.getProducts(8).map((item, index) => (
-                                <ProductCard
-                                    key={index}
-                                    img01={item.image01}
-                                    img02={item.image02}
-                                    name={item.title}
-                                    price={Number(item.price)}
-                                    slug={item.slug}
-                                />
-                            ))
-                        }
                     </Grid>
                 </SectionBody>
             </Section>
